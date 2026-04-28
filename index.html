@@ -4,23 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AL ANEES | Meeting Hub</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
     <style>
         :root {
-            --sidebar-collapsed: 72px;
-            --sidebar-expanded: 260px;
-            --bg-main: #f8fafc;
-            --surface: #ffffff;
-            --accent: #2563eb;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.05);
+            --sidebar-collapsed: 72px; --sidebar-expanded: 260px;
+            --bg-main: #f8fafc; --surface: #ffffff; --accent: #2563eb;
+            --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0;
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1);
         }
-
-        body { font-family: 'Inter', sans-serif; background: var(--bg-main); margin: 0; display: flex; color: var(--text-main); height: 100vh; overflow: hidden; }
+        [data-theme="dark"] {
+            --bg-main: #0f172a; --surface: #1e293b; --text-main: #f1f5f9;
+            --text-muted: #94a3b8; --border: #334155;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-main); margin: 0; display: flex; color: var(--text-main); height: 100vh; overflow: hidden; transition: 0.3s; }
 
         /* --- SIDEBAR --- */
         #sidebar { 
@@ -29,203 +25,203 @@
         }
         #sidebar.expanded { width: var(--sidebar-expanded); box-shadow: var(--shadow-lg); }
         
-        .sidebar-header { height: 70px; display: flex; align-items: center; padding: 0 24px; flex-shrink: 0; }
-        .menu-btn { cursor: pointer; color: var(--text-muted); transition: 0.2s; display: flex; align-items: center; }
-        .brand-logo { margin-left: 15px; opacity: 0; transition: 0.2s; white-space: nowrap; font-weight: 700; font-size: 14px; letter-spacing: -0.5px; pointer-events: none; }
-        #sidebar.expanded .brand-logo { opacity: 1; }
-
-        .nav-section { padding: 12px; flex-grow: 1; }
-        .nav-item { display: flex; align-items: center; height: 48px; border-radius: 12px; margin-bottom: 4px; color: var(--text-muted); transition: all 0.2s; cursor: pointer; }
-        .nav-item:hover { background: #f1f5f9; color: var(--text-main); }
-        .nav-item.active { background: #eff6ff; color: var(--accent); }
-        .nav-icon { min-width: 48px; display: flex; justify-content: center; }
-        .nav-label { font-size: 14px; font-weight: 500; opacity: 0; transition: 0.2s; white-space: nowrap; }
+        .sidebar-header { height: 70px; display: flex; align-items: center; padding: 0 24px; overflow: hidden; cursor: pointer; }
+        .brand-text { margin-left: 20px; opacity: 0; transition: 0.2s; white-space: nowrap; pointer-events: none; }
+        #sidebar.expanded .brand-text { opacity: 1; }
+        
+        .nav-item { display: flex; align-items: center; height: 48px; padding: 0 24px; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
+        .nav-item:hover, .nav-item.active { background: #eff6ff; color: var(--accent); }
+        .nav-label { margin-left: 20px; opacity: 0; transition: 0.2s; white-space: nowrap; }
         #sidebar.expanded .nav-label { opacity: 1; }
 
-        /* --- MAIN VIEWPORT --- */
-        main { flex: 1; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
-        .top-bar { height: 70px; background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 40px; position: sticky; top: 0; z-index: 10; justify-content: space-between; }
+        /* --- UI COMPONENTS --- */
+        .pill-switch { position: relative; width: 44px; height: 22px; background: #cbd5e1; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+        .pill-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: white; border-radius: 50%; transition: 0.3s; }
+        [data-theme="dark"] .pill-switch { background: var(--accent); }
+        [data-theme="dark"] .pill-switch::after { transform: translateX(22px); }
+
+        .wave-box { display: flex; align-items: center; justify-content: center; gap: 4px; height: 40px; margin: 15px 0; }
+        .wave-bar { width: 3px; height: 8px; background: var(--accent); border-radius: 3px; animation: wave 1s infinite ease-in-out; }
+        @keyframes wave { 0%, 100% { height: 8px; } 50% { height: 35px; } }
+
+        /* --- DRAWERS --- */
+        .right-drawer { position: fixed; right: -350px; top: 0; width: 320px; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); transition: 0.3s; padding: 25px; z-index: 2000; box-shadow: var(--shadow-lg); }
+        .right-drawer.open { right: 0; }
+
+        /* --- MAIN AREA --- */
+        main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .top-bar { height: 70px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 40px; }
+        .content-area { max-width: 800px; margin: 40px auto; width: 90%; }
         
-        .logo-group { display: flex; align-items: center; gap: 12px; }
-        .brand-text-watermark { font-weight: 800; color: var(--text-main); letter-spacing: 1px; }
-
-        .workspace-container { max-width: 850px; margin: 40px auto; width: 90%; padding-bottom: 100px; }
-        .glass-card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 32px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); transition: 0.3s; }
-
-        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 100px; font-size: 11px; font-weight: 700; background: #f1f5f9; color: var(--text-muted); margin-bottom: 16px; text-transform: uppercase; }
-        .status-badge.live { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
-        .status-badge.paused { background: #fef9c3; color: #a16207; border: 1px solid #fef08a; }
-
-        .btn-primary { background: var(--text-main); color: white; border: none; padding: 12px 28px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; }
-        .btn-secondary { background: #e2e8f0; color: var(--text-main); border: none; padding: 12px 28px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; margin-right: 10px; }
-        
-        .viz-container { display: flex; gap: 4px; height: 30px; align-items: flex-end; margin-bottom: 25px; }
-        .viz-bar { width: 4px; background: var(--accent); border-radius: 10px; animation: bar-grow 0.8s infinite ease-in-out alternate; }
-        .viz-bar.paused { animation-play-state: paused; background: #94a3b8; }
-        @keyframes bar-grow { from { height: 6px; opacity: 0.3; } to { height: 30px; opacity: 1; } }
-
-        .output-container { display: none; margin-top: 40px; }
-        .output-container.visible { display: block; animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .rich-content { font-size: 15px; line-height: 1.7; color: #334155; min-height: 250px; white-space: pre-wrap; }
-        .action-bar { display: flex; gap: 10px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
-        .icon-btn { width: 42px; height: 42px; border-radius: 10px; border: 1px solid var(--border); background: white; color: var(--text-muted); cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-        .icon-btn:hover { background: #f8fafc; color: var(--accent); border-color: var(--accent); }
-        
+        .minutes-box { 
+            background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 30px; 
+            line-height: 1.8; cursor: text !important; outline: none; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .label { font-weight: 700; color: var(--accent); margin-right: 8px; }
+        .btn { padding: 12px 24px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: #1e293b; color: white; }
+        .btn-pause { background: #f59e0b; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-attach { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border); font-size: 13px; margin-top: 15px; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <nav id="sidebar">
-        <div class="sidebar-header">
-            <div class="menu-btn" onclick="toggleSidebar()">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        <div class="sidebar-header" onclick="toggleSidebar()">
+            <div style="min-width: 24px; display: flex; justify-content: center;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </div>
-            <div class="brand-logo">AL ANEES</div>
+            <div class="brand-text">
+                <span style="font-weight:700; display:block; font-size:15px;">AL ANEES</span>
+                <span style="font-size:10px; color:var(--accent); font-weight:500;">powered by Gemini</span>
+            </div>
         </div>
-        <div class="nav-section">
-            <div class="nav-item active" onclick="location.reload()"><div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div><div class="nav-label">New Session</div></div>
+
+        <div class="nav-item active" onclick="location.reload()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            <span class="nav-label" id="t-nav-new">New Session</span>
+        </div>
+        <div class="nav-item" onclick="toggleDrawer('historyDrawer')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="nav-label" id="t-nav-history">History</span>
+        </div>
+        <div class="nav-item" onclick="toggleDrawer('settingsDrawer')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            <span class="nav-label" id="t-nav-settings">Settings</span>
         </div>
     </nav>
 
-    <main>
+    <div id="settingsDrawer" class="right-drawer">
+        <h3 id="t-settings-head">Settings</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+            <span id="t-dark-mode">Dark Mode</span>
+            <div class="pill-switch" onclick="toggleTheme()"></div>
+        </div>
+        <label id="t-lang-label" style="font-size:12px; font-weight:700;">LANGUAGE</label>
+        <select id="langSelect" onchange="applyTranslation(this.value)" style="width:100%; padding:10px; margin-top:8px; border-radius:8px; border:1px solid var(--border);">
+            <option value="en">English</option>
+            <option value="ml">Malayalam</option>
+            <option value="ar">Arabic</option>
+            <option value="hi">Hindi</option>
+            <option value="ta">Tamil</option>
+        </select>
+        <button class="btn btn-primary" style="margin-top:30px; width:100%;" onclick="closeAllDrawers()">Save</button>
+    </div>
+
+    <div id="historyDrawer" class="right-drawer">
+        <h3 id="t-history-head">Meeting History</h3>
+        <p style="font-size:13px; color:var(--text-muted);">No history found.</p>
+    </div>
+
+    <main onclick="closeAllDrawers()">
         <div class="top-bar">
-            <div class="logo-group">
-                <div class="brand-text-watermark">AL ANEES</div>
-            </div>
-            <div style="font-size: 11px; color: var(--text-muted); font-weight: 700;">DASHBOARD / MEETING_HUB</div>
+            <img src="image_954da3.png" style="height:32px; margin-right:12px;">
+            <strong style="letter-spacing:1px;">AL ANEES </strong>
         </div>
 
-        <div class="workspace-container">
-            <div class="glass-card" id="mainCard">
-                <div id="idleState">
-                    <div class="status-badge">Professional Meeting Hub</div>
-                    <h1 style="margin: 0 0 10px 0; font-size: 26px; font-weight: 700;">Al Anees Transcription</h1>
-                    <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 15px;">Real-time text capture for your professional meetings.</p>
-                    <button class="btn-primary" onclick="startMeeting()">▶ Start Session</button>
-                </div>
+        <div class="content-area">
+            <div id="idleState" class="minutes-box">
+                <h1 id="t-welcome">Meeting Minutes</h1>
+                <p id="t-desc" style="color:var(--text-muted)">Press start to record your session.</p>
+                <button class="btn btn-primary" onclick="startSession()" id="t-start-btn">▶ Start Session</button>
+            </div>
 
-                <div id="recordingState" class="hidden">
-                    <div id="recordingBadge" class="status-badge live">● Recording Active</div>
-                    <div id="langStatus" style="font-size:12px; color:var(--accent); font-weight:600; margin-bottom:15px; height: 40px; overflow-y: auto;">Capturing Audio...</div>
-                    <div class="viz-container">
-                        <div class="viz-bar" style="animation-delay: 0s"></div><div class="viz-bar" style="animation-delay: 0.2s"></div><div class="viz-bar" style="animation-delay: 0.4s"></div>
-                        <div class="viz-bar" style="animation-delay: 0.1s"></div><div class="viz-bar" style="animation-delay: 0.3s"></div><div class="viz-bar" style="animation-delay: 0.5s"></div>
-                    </div>
-                    <button id="pauseBtn" class="btn-secondary" onclick="togglePause()">Pause Session</button>
-                    <button class="btn-primary" style="background:#dc2626" onclick="finalizeMeeting()">Finalize & View Transcript</button>
+            <div id="recordingState" class="minutes-box hidden">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="width:10px; height:10px; background:red; border-radius:50%;" id="pulseDot"></div>
+                    <span style="color:red; font-weight:700; font-size:12px;" id="t-status">RECORDING LIVE</span>
+                </div>
+                <div class="wave-box" id="waveContainer">
+                    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                </div>
+                <div id="liveText" style="min-height:50px; font-style:italic; color:var(--text-muted);">Listening...</div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button class="btn btn-pause" id="pauseBtn" onclick="togglePause()">⏸ Pause</button>
+                    <button class="btn btn-danger" onclick="stopSession()">Finalize</button>
                 </div>
             </div>
 
-            <div class="output-container" id="summaryBox">
-                <h3 style="font-size: 14px; color: var(--text-muted); margin-bottom: 15px;">Meeting Transcript</h3>
-                <div class="glass-card">
-                    <div class="rich-content" id="summaryContent" contenteditable="true"></div>
-                    <div class="action-bar">
-                        <button class="icon-btn" onclick="downloadTxt()" title="Download"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg></button>
-                        <button class="icon-btn" onclick="copyText()" title="Copy"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
-                    </div>
+            <div id="resultState" class="hidden">
+                <div class="minutes-box" id="minutesFinal" contenteditable="true">
+                    <div><span class="label" id="t-m-title">Meeting Title:</span> Meeting Session</div>
+                    <div><span class="label" id="t-m-date">Date:</span> <span id="resDate"></span></div>
+                    <div><span class="label" id="t-m-time">Time:</span> <span id="resTime"></span></div>
+                    <hr style="border:0; border-top:1px solid var(--border); margin:20px 0;">
+                    <div><span class="label" id="t-m-summary">📝 Discussion Summary</span><br><span id="resTranscript"></span></div>
+                    <br>
+                    <div><span class="label" id="t-m-actions">✅ Action Items</span><br>• </div>
+                    <br>
+                    <div><span class="label" id="t-m-notes">📎 Additional Notes</span><br></div>
+                    <br>
+                    <div><span class="label" id="t-m-next">📅 Next Meeting</span><br><span id="t-m-ndate">Date:</span> <br><span id="t-m-ntime">Time:</span> </div>
+                    
+                    <button class="btn btn-attach" onclick="document.getElementById('hiddenFile').click()">📎 Attach File</button>
+                    <input type="file" id="hiddenFile" class="hidden">
                 </div>
+                <button class="btn btn-primary" style="background:#10b981; width:100%; margin-top:20px;" onclick="saveDoc()" id="t-save-btn">💾 Save as Text Document</button>
             </div>
         </div>
     </main>
 
     <script>
-        let recognition;
-        let fullTranscript = "";
-        let isPaused = false;
+        let rec; let text = ""; let isPaused = false;
+        const dict = {
+            en: { welcome: "Meeting Hub", desc: "Press start to record.", "start-btn": "▶ Start Session", status: "RECORDING LIVE", "m-title": "Meeting Title:", "m-date": "Date:", "m-time": "Time:", "m-summary": "📝 Discussion Summary", "m-actions": "✅ Action Items", "m-notes": "📎 Additional Notes", "m-next": "📅 Next Meeting", "save-btn": "💾 Save Document" },
+            ml: { welcome: "മീറ്റിംഗ് ഹബ്", desc: "റെക്കോർഡ് ചെയ്യാൻ സ്റ്റാർട്ട് അമർത്തുക.", "start-btn": "▶ സെഷൻ തുടങ്ങുക", status: "തത്സമയം", "m-title": "മീറ്റിംഗ് തലക്കെട്ട്:", "m-date": "തീയതി:", "m-time": "സമയം:", "m-summary": "📝 ചർച്ചാ സംഗ്രഹം", "m-actions": "✅ കർമ്മ പദ്ധതികൾ", "m-notes": "📎 അധിക കുറിപ്പുകൾ", "m-next": "📅 അടുത്ത മീറ്റിംഗ്", "save-btn": "💾 സേവ് ചെയ്യുക" },
+            ar: { welcome: "مركز الاجتماعات", desc: "اضغط على بدء للتسجيل.", "start-btn": "▶ ابدأ الجلسة", status: "مباشر", "m-title": "عنوان الاجتماع:", "m-date": "التاريخ:", "m-time": "الوقت:", "m-summary": "📝 ملخص المناقشة", "m-actions": "✅ بنود العمل", "m-notes": "📎 ملاحظات إضافية", "m-next": "📅 الاجتماع القادم", "save-btn": "💾 حفظ المستند" }
+        };
 
-        // Speech Recognition Setup
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
-            recognition.continuous = true;
-            recognition.interimResults = true;
-            recognition.lang = 'en-US';
-
-            recognition.onresult = (event) => {
-                if (isPaused) return; 
-                
-                let interimTranscript = "";
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        fullTranscript += event.results[i][0].transcript + " ";
-                    } else {
-                        interimTranscript += event.results[i][0].transcript;
-                    }
-                }
-                document.getElementById('langStatus').innerText = (interimTranscript || "Listening...");
-            };
-
-            recognition.onend = () => {
-                if (!isPaused && !document.getElementById('recordingState').classList.contains('hidden')) {
-                    recognition.start();
-                }
-            };
-
-            recognition.onerror = (err) => console.error("Mic Error:", err);
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('expanded'); }
+        function toggleDrawer(id) { event.stopPropagation(); document.querySelectorAll('.right-drawer').forEach(d => d.classList.remove('open')); document.getElementById(id).classList.add('open'); }
+        function closeAllDrawers() { document.querySelectorAll('.right-drawer').forEach(d => d.classList.remove('open')); }
+        function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); }
+        
+        function applyTranslation(lang) {
+            const t = dict[lang] || dict.en;
+            Object.keys(t).forEach(k => { const el = document.getElementById('t-'+k); if(el) el.innerText = t[k]; });
         }
 
-        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('expanded');
+        function startSession() {
+            const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if(!Speech) return alert("Speech Recognition not supported in this browser.");
+            rec = new Speech(); rec.continuous = true; rec.interimResults = true;
+            document.getElementById('resDate').innerText = new Date().toLocaleDateString();
+            document.getElementById('resTime').innerText = new Date().toLocaleTimeString();
+            rec.onresult = (e) => {
+                if(isPaused) return;
+                let inter = "";
+                for (let i = e.resultIndex; i < e.results.length; ++i) {
+                    if (e.results[i].isFinal) text += e.results[i][0].transcript + " ";
+                    else inter += e.results[i][0].transcript;
+                }
+                document.getElementById('liveText').innerText = text + inter;
+            };
+            rec.start();
+            document.getElementById('idleState').classList.add('hidden');
+            document.getElementById('recordingState').classList.remove('hidden');
+        }
 
-        window.startMeeting = function() {
-            if (!recognition) return alert("Microphone access is not supported on this browser.");
-            fullTranscript = "";
-            isPaused = false;
-            try {
-                recognition.start();
-                document.getElementById('idleState').classList.add('hidden');
-                document.getElementById('recordingState').classList.remove('hidden');
-            } catch(e) { alert("Microphone blocked or already in use."); }
-        };
-
-        window.togglePause = function() {
+        function togglePause() {
+            isPaused = !isPaused;
             const btn = document.getElementById('pauseBtn');
-            const badge = document.getElementById('recordingBadge');
-            const bars = document.querySelectorAll('.viz-bar');
+            const wave = document.getElementById('waveContainer');
+            if(isPaused) { btn.innerText = "▶ Resume"; wave.style.opacity = "0.2"; }
+            else { btn.innerText = "⏸ Pause"; wave.style.opacity = "1"; }
+        }
 
-            if (!isPaused) {
-                isPaused = true;
-                recognition.stop();
-                btn.innerText = "Resume Session";
-                badge.innerText = "|| Session Paused";
-                badge.className = "status-badge paused";
-                document.getElementById('langStatus').innerText = "Paused...";
-                bars.forEach(b => b.classList.add('paused'));
-            } else {
-                isPaused = false;
-                recognition.start();
-                btn.innerText = "Pause Session";
-                badge.innerText = "● Recording Active";
-                badge.className = "status-badge live";
-                document.getElementById('langStatus').innerText = "Resuming...";
-                bars.forEach(b => b.classList.remove('paused'));
-            }
-        };
-
-        window.finalizeMeeting = function() {
-            isPaused = true;
-            if(recognition) recognition.stop();
-            
+        function stopSession() {
+            if(rec) rec.stop();
             document.getElementById('recordingState').classList.add('hidden');
-            document.getElementById('summaryBox').classList.add('visible');
-            document.getElementById('summaryContent').innerText = fullTranscript || "No text was captured. Make sure your microphone is working.";
-        };
+            document.getElementById('resultState').classList.remove('hidden');
+            document.getElementById('resTranscript').innerText = text;
+        }
 
-        window.copyText = () => {
-            navigator.clipboard.writeText(document.getElementById('summaryContent').innerText);
-            alert("Transcript Copied.");
-        };
-
-        window.downloadTxt = () => {
-            const blob = new Blob([document.getElementById('summaryContent').innerText], {type: 'text/plain'});
-            const a = document.createElement('a');
-            a.download = 'Al_Anees_Transcript.txt';
-            a.href = URL.createObjectURL(blob);
-            a.click();
-        };
+        function saveDoc() {
+            const blob = new Blob([document.getElementById('minutesFinal').innerText], {type: 'text/plain'});
+            const a = document.createElement('a'); a.download = "Meeting_Minutes.txt"; a.href = URL.createObjectURL(blob); a.click();
+        }
     </script>
 </body>
 </html>
