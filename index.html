@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AL ANEES AI | Global Intelligence</title>
+    <title>AL ANEES | Meeting Hub</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -18,7 +18,6 @@
             --text-muted: #64748b;
             --border: #e2e8f0;
             --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.05);
-            --gemini-gradient: linear-gradient(90deg, #4285f4, #9b72cb, #d96570);
         }
 
         body { font-family: 'Inter', sans-serif; background: var(--bg-main); margin: 0; display: flex; color: var(--text-main); height: 100vh; overflow: hidden; }
@@ -43,22 +42,12 @@
         .nav-label { font-size: 14px; font-weight: 500; opacity: 0; transition: 0.2s; white-space: nowrap; }
         #sidebar.expanded .nav-label { opacity: 1; }
 
-        /* --- RIGHT PANELS --- */
-        .right-panel {
-            position: fixed; top: 0; right: -400px; width: 350px; height: 100vh; background: white;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.05); z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 30px; border-left: 1px solid var(--border);
-        }
-        .right-panel.open { right: 0; }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
-
         /* --- MAIN VIEWPORT --- */
         main { flex: 1; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
         .top-bar { height: 70px; background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 40px; position: sticky; top: 0; z-index: 10; justify-content: space-between; }
         
         .logo-group { display: flex; align-items: center; gap: 12px; }
-        .powered-by { font-size: 12px; font-weight: 500; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
-        .gemini-text { background: var(--gemini-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
+        .brand-text-watermark { font-weight: 800; color: var(--text-main); letter-spacing: 1px; }
 
         .workspace-container { max-width: 850px; margin: 40px auto; width: 90%; padding-bottom: 100px; }
         .glass-card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 32px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); transition: 0.3s; }
@@ -75,34 +64,17 @@
         .viz-bar.paused { animation-play-state: paused; background: #94a3b8; }
         @keyframes bar-grow { from { height: 6px; opacity: 0.3; } to { height: 30px; opacity: 1; } }
 
-        /* --- OUTPUT AREA --- */
-        .output-tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--border); margin-bottom: 24px; margin-top: 40px; }
-        .tab { padding: 12px 4px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; position: relative; transition: 0.2s; }
-        .tab.active { color: var(--accent); }
-        .tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--accent); }
-
-        .summary-container { display: none; }
-        .summary-container.visible { display: block; animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+        .output-container { display: none; margin-top: 40px; }
+        .output-container.visible { display: block; animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .rich-content { font-size: 15px; line-height: 1.7; color: #334155; min-height: 250px; }
-        .rich-content h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-top: 24px; margin-bottom: 10px; font-weight: 700; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; }
-
+        .rich-content { font-size: 15px; line-height: 1.7; color: #334155; min-height: 250px; white-space: pre-wrap; }
         .action-bar { display: flex; gap: 10px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
-        .icon-btn { width: 42px; height: 42px; border-radius: 10px; border: 1px solid var(--border); background: white; color: var(--text-muted); cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; position: relative; }
+        .icon-btn { width: 42px; height: 42px; border-radius: 10px; border: 1px solid var(--border); background: white; color: var(--text-muted); cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .icon-btn:hover { background: #f8fafc; color: var(--accent); border-color: var(--accent); }
         
         .hidden { display: none !important; }
     </style>
-
-    <!-- Gemini SDK Import -->
-    <script type="importmap">
-    {
-      "imports": {
-        "@google/genai": "https://esm.run/@google/generative-ai"
-      }
-    }
-    </script>
 </head>
 <body>
 
@@ -111,85 +83,59 @@
             <div class="menu-btn" onclick="toggleSidebar()">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </div>
-            <div class="brand-logo">AL ANEES <span style="color:var(--accent)">AI</span></div>
+            <div class="brand-logo">AL ANEES</div>
         </div>
         <div class="nav-section">
             <div class="nav-item active" onclick="location.reload()"><div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div><div class="nav-label">New Session</div></div>
-            <div class="nav-item" onclick="togglePanel('libraryPanel')"><div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div><div class="nav-label">Library</div></div>
-            <div class="nav-item" onclick="togglePanel('settingsPanel')"><div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div><div class="nav-label">Settings</div></div>
         </div>
     </nav>
 
-    <div id="libraryPanel" class="right-panel">
-        <div class="panel-header"><h3>Session History</h3><button onclick="togglePanel('libraryPanel')">✕</button></div>
-        <div id="historyList" style="font-size:12px; color:var(--text-muted);">No saved sessions yet.</div>
-    </div>
-
-    <div id="settingsPanel" class="right-panel">
-        <div class="panel-header"><h3>AI Engine Settings</h3><button onclick="togglePanel('settingsPanel')">✕</button></div>
-        <div style="font-size:12px;">Universal Translation: <b>Active</b></div>
-        <div style="margin-top:15px; font-size:12px;">Engine: <b>Gemini 1.5 Flash</b></div>
-    </div>
-D
     <main>
         <div class="top-bar">
             <div class="logo-group">
-                <img src="image_954da3.png" height="35" alt="Al Anees">
-                <div class="powered-by">powered by <span class="gemini-text">Gemini</span></div>
+                <div class="brand-text-watermark">AL ANEES</div>
             </div>
-            <div style="font-size: 11px; color: var(--text-muted); font-weight: 700;">DASHBOARD / INTEL_HUB</div>
+            <div style="font-size: 11px; color: var(--text-muted); font-weight: 700;">DASHBOARD / MEETING_HUB</div>
         </div>
 
         <div class="workspace-container">
             <div class="glass-card" id="mainCard">
                 <div id="idleState">
                     <div class="status-badge">Professional Meeting Hub</div>
-                    <h1 style="margin: 0 0 10px 0; font-size: 26px; font-weight: 700;">Al Anees Intelligence</h1>
-                    <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 15px;">Smart transcription and professional executive summaries in real-time.</p>
+                    <h1 style="margin: 0 0 10px 0; font-size: 26px; font-weight: 700;">Al Anees Transcription</h1>
+                    <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 15px;">Real-time text capture for your professional meetings.</p>
                     <button class="btn-primary" onclick="startMeeting()">▶ Start Session</button>
                 </div>
 
                 <div id="recordingState" class="hidden">
                     <div id="recordingBadge" class="status-badge live">● Recording Active</div>
-                    <div id="langStatus" style="font-size:12px; color:var(--accent); font-weight:600; margin-bottom:15px; height: 40px; overflow-y: auto;">Capturing Audio Flow...</div>
+                    <div id="langStatus" style="font-size:12px; color:var(--accent); font-weight:600; margin-bottom:15px; height: 40px; overflow-y: auto;">Capturing Audio...</div>
                     <div class="viz-container">
                         <div class="viz-bar" style="animation-delay: 0s"></div><div class="viz-bar" style="animation-delay: 0.2s"></div><div class="viz-bar" style="animation-delay: 0.4s"></div>
                         <div class="viz-bar" style="animation-delay: 0.1s"></div><div class="viz-bar" style="animation-delay: 0.3s"></div><div class="viz-bar" style="animation-delay: 0.5s"></div>
                     </div>
                     <button id="pauseBtn" class="btn-secondary" onclick="togglePause()">Pause Session</button>
-                    <button class="btn-primary" style="background:#dc2626" onclick="finalizeMeeting()">Generate Executive Summary</button>
+                    <button class="btn-primary" style="background:#dc2626" onclick="finalizeMeeting()">Finalize & View Transcript</button>
                 </div>
             </div>
 
-            <div class="summary-container" id="summaryBox">
-                <div class="output-tabs">
-                    <div class="tab active" onclick="switchTab(0)">Executive Summary</div>
-                    <div class="tab" onclick="switchTab(1)">Action Items</div>
-                </div>
+            <div class="output-container" id="summaryBox">
+                <h3 style="font-size: 14px; color: var(--text-muted); margin-bottom: 15px;">Meeting Transcript</h3>
                 <div class="glass-card">
                     <div class="rich-content" id="summaryContent" contenteditable="true"></div>
                     <div class="action-bar">
-                        <button class="icon-btn" onclick="downloadTxt()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg></button>
-                        <button class="icon-btn" onclick="copyText()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+                        <button class="icon-btn" onclick="downloadTxt()" title="Download"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg></button>
+                        <button class="icon-btn" onclick="copyText()" title="Copy"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <script type="module">
-        import { GoogleGenerativeAI } from "@google/genai";
-
-        // --- CONFIGURATION (ENTER YOUR KEY HERE) ---
-        const API_KEY = ""; 
-        const genAI = new GoogleGenerativeAI(API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); 
-// Or use the latest alias: "gemini-flash-latest"
-
+    <script>
         let recognition;
         let fullTranscript = "";
         let isPaused = false;
-        const contentData = ["", ""];
 
         // Speech Recognition Setup
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -200,7 +146,7 @@ D
             recognition.lang = 'en-US';
 
             recognition.onresult = (event) => {
-                if (isPaused) return; // Don't capture if paused
+                if (isPaused) return; 
                 
                 let interimTranscript = "";
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
@@ -214,8 +160,7 @@ D
             };
 
             recognition.onend = () => {
-                // If it ends unexpectedly but we aren't done, restart it
-                if (!isPaused && document.getElementById('idleState').classList.contains('hidden')) {
+                if (!isPaused && !document.getElementById('recordingState').classList.contains('hidden')) {
                     recognition.start();
                 }
             };
@@ -224,12 +169,6 @@ D
         }
 
         window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('expanded');
-        window.togglePanel = (id) => {
-            const panel = document.getElementById(id);
-            const isOpen = panel.classList.contains('open');
-            document.querySelectorAll('.right-panel').forEach(p => p.classList.remove('open'));
-            if(!isOpen) panel.classList.add('open');
-        };
 
         window.startMeeting = function() {
             if (!recognition) return alert("Microphone access is not supported on this browser.");
@@ -239,7 +178,7 @@ D
                 recognition.start();
                 document.getElementById('idleState').classList.add('hidden');
                 document.getElementById('recordingState').classList.remove('hidden');
-            } catch(e) { alert("Microphone blocked."); }
+            } catch(e) { alert("Microphone blocked or already in use."); }
         };
 
         window.togglePause = function() {
@@ -248,7 +187,6 @@ D
             const bars = document.querySelectorAll('.viz-bar');
 
             if (!isPaused) {
-                // Action: PAUSE
                 isPaused = true;
                 recognition.stop();
                 btn.innerText = "Resume Session";
@@ -257,7 +195,6 @@ D
                 document.getElementById('langStatus').innerText = "Paused...";
                 bars.forEach(b => b.classList.add('paused'));
             } else {
-                // Action: RESUME
                 isPaused = false;
                 recognition.start();
                 btn.innerText = "Pause Session";
@@ -268,40 +205,24 @@ D
             }
         };
 
-        window.finalizeMeeting = async function() {
-    isPaused = true;
-    recognition.stop();
-    document.getElementById('langStatus').innerText = "Processing meeting intelligence...";
-
-    try {
-        const prompt = `Write a professional Executive Summary for: "${fullTranscript}"`;
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
-
-        contentData[0] = text;
-        document.getElementById('recordingState').classList.add('hidden');
-        document.getElementById('summaryBox').classList.add('visible');
-        window.switchTab(0);
-    } catch (error) {
-        console.error("Detailed Error:", error);
-        alert("AI Error: " + error.message);
-    }
-};
-        window.switchTab = function(index) {
-            document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === index));
-            document.getElementById('summaryContent').innerHTML = contentData[index];
+        window.finalizeMeeting = function() {
+            isPaused = true;
+            if(recognition) recognition.stop();
+            
+            document.getElementById('recordingState').classList.add('hidden');
+            document.getElementById('summaryBox').classList.add('visible');
+            document.getElementById('summaryContent').innerText = fullTranscript || "No text was captured. Make sure your microphone is working.";
         };
 
         window.copyText = () => {
             navigator.clipboard.writeText(document.getElementById('summaryContent').innerText);
-            alert("Intelligence Copied.");
+            alert("Transcript Copied.");
         };
 
         window.downloadTxt = () => {
             const blob = new Blob([document.getElementById('summaryContent').innerText], {type: 'text/plain'});
             const a = document.createElement('a');
-            a.download = 'Al_Anees_Report.txt';
+            a.download = 'Al_Anees_Transcript.txt';
             a.href = URL.createObjectURL(blob);
             a.click();
         };
