@@ -3,33 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AL ANEES | Meeting Hub</title>
+    <title>AL ANEES | AI Meeting Intelligence</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --sidebar-collapsed: 72px; --sidebar-expanded: 260px;
             --bg-main: #f8fafc; --surface: #ffffff; --accent: #2563eb;
             --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0;
-            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1);
         }
         [data-theme="dark"] {
             --bg-main: #0f172a; --surface: #1e293b; --text-main: #f1f5f9;
             --text-muted: #94a3b8; --border: #334155;
         }
-        body { font-family: 'Inter', sans-serif; background: var(--bg-main); margin: 0; display: flex; color: var(--text-main); height: 100vh; overflow: hidden; transition: 0.3s; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-main); margin: 0; display: flex; color: var(--text-main); height: 100vh; overflow: hidden; }
 
         #sidebar { 
             width: var(--sidebar-collapsed); height: 100vh; background: var(--surface); border-right: 1px solid var(--border); 
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; z-index: 1000; display: flex; flex-direction: column;
+            transition: width 0.3s; display: flex; flex-direction: column;
         }
-        #sidebar.expanded { width: var(--sidebar-expanded); box-shadow: var(--shadow-lg); }
-        .sidebar-header { height: 70px; display: flex; align-items: center; padding: 0 24px; overflow: hidden; cursor: pointer; }
-        .brand-text { margin-left: 20px; opacity: 0; transition: 0.2s; white-space: nowrap; pointer-events: none; }
+        #sidebar.expanded { width: var(--sidebar-expanded); }
+        .sidebar-header { height: 70px; display: flex; align-items: center; padding: 0 24px; cursor: pointer; }
+        .brand-text { margin-left: 20px; opacity: 0; transition: 0.2s; white-space: nowrap; }
         #sidebar.expanded .brand-text { opacity: 1; }
         
-        .nav-item { display: flex; align-items: center; height: 48px; padding: 0 24px; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
+        .nav-item { display: flex; align-items: center; height: 48px; padding: 0 24px; color: var(--text-muted); cursor: pointer; }
         .nav-item:hover, .nav-item.active { background: #eff6ff; color: var(--accent); }
-        .nav-label { margin-left: 20px; opacity: 0; transition: 0.2s; white-space: nowrap; }
+        .nav-label { margin-left: 20px; opacity: 0; }
         #sidebar.expanded .nav-label { opacity: 1; }
 
         main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
@@ -38,176 +37,148 @@
         
         .minutes-box { 
             background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 30px; 
-            line-height: 1.8; cursor: text !important; outline: none; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            line-height: 1.8; outline: none; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
         .label { font-weight: 700; color: var(--accent); margin-right: 8px; }
-        .btn { padding: 12px 24px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn { padding: 12px 24px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; }
         .btn-primary { background: #1e293b; color: white; }
-        .btn-pause { background: #f59e0b; color: white; }
         .btn-danger { background: #ef4444; color: white; }
-        .btn-attach { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border); font-size: 13px; margin-top: 15px; }
         .hidden { display: none !important; }
 
         .wave-box { display: flex; align-items: center; justify-content: center; gap: 4px; height: 40px; margin: 15px 0; }
         .wave-bar { width: 3px; height: 8px; background: var(--accent); border-radius: 3px; animation: wave 1s infinite ease-in-out; }
         @keyframes wave { 0%, 100% { height: 8px; } 50% { height: 35px; } }
-
-        .right-drawer { position: fixed; right: -350px; top: 0; width: 320px; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); transition: 0.3s; padding: 25px; z-index: 2000; box-shadow: var(--shadow-lg); }
-        .right-drawer.open { right: 0; }
     </style>
 </head>
 <body>
 
     <nav id="sidebar">
-        <div class="sidebar-header" onclick="toggleSidebar()">
-            <div style="min-width: 24px; display: flex; justify-content: center;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-            </div>
-            <div class="brand-text">
-                <span style="font-weight:700; display:block; font-size:15px;">AL ANEES</span>
-                <span style="font-size:10px; color:var(--accent); font-weight:500;">powered by Gemini</span>
-            </div>
+        <div class="sidebar-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            <div class="brand-text"><span style="font-weight:700;">AL ANEES AI</span></div>
         </div>
-        <div class="nav-item active" onclick="location.reload()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-            <span class="nav-label">New Session</span>
-        </div>
-        <div class="nav-item" onclick="toggleDrawer('historyDrawer')">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <span class="nav-label">History</span>
-        </div>
+        <div class="nav-item active" onclick="location.reload()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg><span class="nav-label">New Session</span></div>
     </nav>
 
-    <div id="historyDrawer" class="right-drawer">
-        <h3>Meeting History</h3>
-        <p style="font-size:13px; color:var(--text-muted);">No history found.</p>
-    </div>
-
-    <main onclick="closeAllDrawers()">
-        <div class="top-bar">
-            <img src="image_954da3.png" style="height:32px; margin-right:12px;">
-            <strong style="letter-spacing:1px;">AL ANEES </strong>
-        </div>
+    <main>
+        <div class="top-bar"><strong>AL ANEES | Meeting Intelligence Engine</strong></div>
 
         <div class="content-area">
             <div id="idleState" class="minutes-box">
-                <h1>Meeting Hub</h1>
-                <p style="color:var(--text-muted)">Press start to record. The system will auto-extract action items.</p>
-                <button class="btn btn-primary" onclick="startSession()">▶ Start Session</button>
+                <h1>AI-Powered Minutes</h1>
+                <p>This system uses intelligent filtering to detect Action Items and correct professional terminology like "Mail" and "Invoicing".</p>
+                <button class="btn btn-primary" onclick="startSession()">▶ Activate AI Listener</button>
             </div>
 
             <div id="recordingState" class="minutes-box hidden">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <div style="width:10px; height:10px; background:red; border-radius:50%;" id="pulseDot"></div>
-                    <span style="color:red; font-weight:700; font-size:12px;">RECORDING LIVE</span>
+                    <div style="width:10px; height:10px; background:red; border-radius:50%; animation: pulse 1s infinite;"></div>
+                    <span style="color:red; font-weight:700;">AI CAPTURE ENGINE RUNNING</span>
                 </div>
-                <div class="wave-box" id="waveContainer">
-                    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                </div>
-                <div id="liveText" style="min-height:50px; font-style:italic; color:var(--text-muted);">Listening...</div>
-                <div style="display:flex; gap:10px; margin-top:20px;">
-                    <button class="btn btn-pause" id="pauseBtn" onclick="togglePause()">⏸ Pause</button>
-                    <button class="btn btn-danger" onclick="stopSession()">Finalize</button>
-                </div>
+                <div class="wave-box"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+                <div id="liveText" style="min-height:50px; font-style:italic; color:var(--text-muted); font-size: 1.1em;">...</div>
+                <button class="btn btn-danger" onclick="stopSession()" style="margin-top:20px;">Stop & Generate Report</button>
             </div>
 
             <div id="resultState" class="hidden">
                 <div class="minutes-box" id="minutesFinal" contenteditable="true">
-                    <div><span class="label">Meeting Title:</span> Meeting Session</div>
                     <div><span class="label">Date:</span> <span id="resDate"></span></div>
-                    <div><span class="label">Time:</span> <span id="resTime"></span></div>
                     <hr style="border:0; border-top:1px solid var(--border); margin:20px 0;">
-                    <div><span class="label">📝 Discussion Summary</span><br><span id="resTranscript"></span></div>
+                    <div><span class="label">📝 AI Summary</span><br><span id="resTranscript"></span></div>
                     <br>
-                    <div><span class="label">✅ Action Items</span><br><div id="resActions"></div></div>
-                    <br>
-                    <div><span class="label">📎 Additional Notes</span><br></div>
-                    <br>
-                    <div><span class="label">📅 Next Meeting</span><br>Date: <br>Time: </div>
-                    
-                    <button class="btn btn-attach" onclick="document.getElementById('hiddenFile').click()">📎 Attach File</button>
-                    <input type="file" id="hiddenFile" class="hidden">
+                    <div><span class="label">✅ Extracted Action Items</span><br><div id="resActions"></div></div>
                 </div>
-                <button class="btn btn-primary" style="background:#10b981; width:100%; margin-top:20px;" onclick="saveDoc()">💾 Save as Text Document</button>
+                <button class="btn btn-primary" style="background:#10b981; width:100%; margin-top:20px;" onclick="saveDoc()">💾 Export AI Report</button>
             </div>
         </div>
     </main>
 
     <script>
         let rec; 
-        let mainSpeech = ""; 
-        let sideSpeech = ""; 
+        let finalizedText = ""; 
         let actionItems = [];
-        let isPaused = false;
-        
-        const actionKeywords = ["tomorrow", "will", "must", "need to", "task", "assign", "scheduled"];
-        const irrelevantKeywords = ["haha", "hehe", "laugh", "giggle", "lunch", "weather"];
+        let processedResults = new Set(); // Prevents repeating text "mess"
 
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('expanded'); }
-        function toggleDrawer(id) { event.stopPropagation(); document.querySelectorAll('.right-drawer').forEach(d => d.classList.remove('open')); document.getElementById(id).classList.add('open'); }
-        function closeAllDrawers() { document.querySelectorAll('.right-drawer').forEach(d => d.classList.remove('open')); }
+        // AI Terminology Correction
+        const aiCorrectionMap = { 
+            "male": "mail", 
+            "tomorrow": "Tomorrow", 
+            "sajid": "Sajid",
+            "invoice": "Invoice",
+            "meeting": "Meeting"
+        };
+
+        const actionTriggers = ["tomorrow", "will", "must", "send", "come", "bring", "task", "finish"];
 
         function startSession() {
             const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if(!Speech) return alert("Not supported.");
+            if(!Speech) return alert("Browser not supported.");
             
             rec = new Speech(); 
             rec.continuous = true; 
             rec.interimResults = true;
+            rec.lang = 'en-US';
 
-            document.getElementById('resDate').innerText = new Date().toLocaleDateString();
-            document.getElementById('resTime').innerText = new Date().toLocaleTimeString();
+            document.getElementById('resDate').innerText = new Date().toLocaleString();
 
             rec.onresult = (e) => {
-                if(isPaused) return;
-                let interim = "";
+                let currentInterim = "";
+                
                 for (let i = e.resultIndex; i < e.results.length; ++i) {
                     let transcript = e.results[i][0].transcript.trim();
+                    
+                    // 1. AI Homophone Correction
+                    Object.keys(aiCorrectionMap).forEach(key => {
+                        let reg = new RegExp(`\\b${key}\\b`, "gi");
+                        transcript = transcript.replace(reg, aiCorrectionMap[key]);
+                    });
+
                     if (e.results[i].isFinal) {
-                        let low = transcript.toLowerCase();
-                        // Categorization
-                        if (irrelevantKeywords.some(k => low.includes(k)) || transcript.split(' ').length < 3) {
-                            sideSpeech += "• " + transcript + "\n";
-                        } else {
-                            mainSpeech += transcript + ". ";
-                            // Action Item Extraction
-                            if (actionKeywords.some(k => low.includes(k))) {
+                        // 2. Repetition Lock: Only process if we haven't handled this index
+                        if (!processedResults.has(i)) {
+                            finalizedText += transcript.charAt(0).toUpperCase() + transcript.slice(1) + ". ";
+                            
+                            // 3. Action Item Extraction
+                            if (actionTriggers.some(k => transcript.toLowerCase().includes(k))) {
                                 actionItems.push(transcript);
                             }
+                            processedResults.add(i);
                         }
                     } else {
-                        interim = transcript;
+                        currentInterim = transcript;
                     }
                 }
-                document.getElementById('liveText').innerText = interim || "Listening...";
+                // Only show the moving text, not the messy stack
+                document.getElementById('liveText').innerText = currentInterim || "Processing speech...";
             };
 
-            rec.onend = () => { if (!isPaused && !document.getElementById('recordingState').classList.contains('hidden')) rec.start(); };
+            rec.onend = () => { 
+                if (!document.getElementById('recordingState').classList.contains('hidden')) rec.start(); 
+            };
+            
             rec.start();
             document.getElementById('idleState').classList.add('hidden');
             document.getElementById('recordingState').classList.remove('hidden');
         }
 
-        function togglePause() {
-            isPaused = !isPaused;
-            if(isPaused) { rec.stop(); document.getElementById('pauseBtn').innerText = "▶ Resume"; }
-            else { rec.start(); document.getElementById('pauseBtn').innerText = "⏸ Pause"; }
-        }
-
         function stopSession() {
-            if(rec) { rec.onend = null; rec.stop(); }
+            rec.onend = null;
+            rec.stop();
             document.getElementById('recordingState').classList.add('hidden');
             document.getElementById('resultState').classList.remove('hidden');
             
-            document.getElementById('resTranscript').innerHTML = `<strong>Main Discussion:</strong><br>${mainSpeech}<br><br><span style="color:#f59e0b;"><strong>Side Chatter:</strong></span><br><i>${sideSpeech}</i>`;
-            
-            const actionContainer = document.getElementById('resActions');
-            actionContainer.innerHTML = actionItems.length > 0 ? actionItems.map(item => `• ${item}`).join('<br>') : "• No action items detected.";
+            document.getElementById('resTranscript').innerText = finalizedText || "No discussion recorded.";
+            document.getElementById('resActions').innerHTML = actionItems.length > 0 ? 
+                actionItems.map(a => `• ${a}`).join('<br>') : "• No actions identified.";
         }
 
         function saveDoc() {
-            const blob = new Blob([document.getElementById('minutesFinal').innerText], {type: 'text/plain'});
-            const a = document.createElement('a'); a.download = "Meeting_Minutes.txt"; a.href = URL.createObjectURL(blob); a.click();
+            const content = document.getElementById('minutesFinal').innerText;
+            const blob = new Blob([content], {type: 'text/plain'});
+            const a = document.createElement('a');
+            a.download = `AI_Meeting_Report_${Date.now()}.txt`;
+            a.href = URL.createObjectURL(blob);
+            a.click();
         }
     </script>
 </body>
