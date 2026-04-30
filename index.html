@@ -18,13 +18,11 @@
         }
         body { font-family: 'Inter', sans-serif; background: var(--bg-main); margin: 0; display: flex; color: var(--text-main); height: 100vh; overflow: hidden; transition: 0.3s; }
 
-        /* --- SIDEBAR --- */
         #sidebar { 
             width: var(--sidebar-collapsed); height: 100vh; background: var(--surface); border-right: 1px solid var(--border); 
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; z-index: 1000; display: flex; flex-direction: column;
         }
         #sidebar.expanded { width: var(--sidebar-expanded); box-shadow: var(--shadow-lg); }
-        
         .sidebar-header { height: 70px; display: flex; align-items: center; padding: 0 24px; overflow: hidden; cursor: pointer; }
         .brand-text { margin-left: 20px; opacity: 0; transition: 0.2s; white-space: nowrap; pointer-events: none; }
         #sidebar.expanded .brand-text { opacity: 1; }
@@ -34,21 +32,6 @@
         .nav-label { margin-left: 20px; opacity: 0; transition: 0.2s; white-space: nowrap; }
         #sidebar.expanded .nav-label { opacity: 1; }
 
-        /* --- UI COMPONENTS --- */
-        .pill-switch { position: relative; width: 44px; height: 22px; background: #cbd5e1; border-radius: 20px; cursor: pointer; transition: 0.3s; }
-        .pill-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: white; border-radius: 50%; transition: 0.3s; }
-        [data-theme="dark"] .pill-switch { background: var(--accent); }
-        [data-theme="dark"] .pill-switch::after { transform: translateX(22px); }
-
-        .wave-box { display: flex; align-items: center; justify-content: center; gap: 4px; height: 40px; margin: 15px 0; }
-        .wave-bar { width: 3px; height: 8px; background: var(--accent); border-radius: 3px; animation: wave 1s infinite ease-in-out; }
-        @keyframes wave { 0%, 100% { height: 8px; } 50% { height: 35px; } }
-
-        /* --- DRAWERS --- */
-        .right-drawer { position: fixed; right: -350px; top: 0; width: 320px; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); transition: 0.3s; padding: 25px; z-index: 2000; box-shadow: var(--shadow-lg); }
-        .right-drawer.open { right: 0; }
-
-        /* --- MAIN AREA --- */
         main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
         .top-bar { height: 70px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 40px; }
         .content-area { max-width: 800px; margin: 40px auto; width: 90%; }
@@ -64,6 +47,13 @@
         .btn-danger { background: #ef4444; color: white; }
         .btn-attach { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border); font-size: 13px; margin-top: 15px; }
         .hidden { display: none !important; }
+
+        .wave-box { display: flex; align-items: center; justify-content: center; gap: 4px; height: 40px; margin: 15px 0; }
+        .wave-bar { width: 3px; height: 8px; background: var(--accent); border-radius: 3px; animation: wave 1s infinite ease-in-out; }
+        @keyframes wave { 0%, 100% { height: 8px; } 50% { height: 35px; } }
+
+        .right-drawer { position: fixed; right: -350px; top: 0; width: 320px; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); transition: 0.3s; padding: 25px; z-index: 2000; box-shadow: var(--shadow-lg); }
+        .right-drawer.open { right: 0; }
     </style>
 </head>
 <body>
@@ -78,40 +68,18 @@
                 <span style="font-size:10px; color:var(--accent); font-weight:500;">powered by Gemini</span>
             </div>
         </div>
-
         <div class="nav-item active" onclick="location.reload()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-            <span class="nav-label" id="t-nav-new">New Session</span>
+            <span class="nav-label">New Session</span>
         </div>
         <div class="nav-item" onclick="toggleDrawer('historyDrawer')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <span class="nav-label" id="t-nav-history">History</span>
-        </div>
-        <div class="nav-item" onclick="toggleDrawer('settingsDrawer')">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-            <span class="nav-label" id="t-nav-settings">Settings</span>
+            <span class="nav-label">History</span>
         </div>
     </nav>
 
-    <div id="settingsDrawer" class="right-drawer">
-        <h3 id="t-settings-head">Settings</h3>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-            <span id="t-dark-mode">Dark Mode</span>
-            <div class="pill-switch" onclick="toggleTheme()"></div>
-        </div>
-        <label id="t-lang-label" style="font-size:12px; font-weight:700;">LANGUAGE</label>
-        <select id="langSelect" onchange="applyTranslation(this.value)" style="width:100%; padding:10px; margin-top:8px; border-radius:8px; border:1px solid var(--border);">
-            <option value="en">English</option>
-            <option value="ml">Malayalam</option>
-            <option value="ar">Arabic</option>
-            <option value="hi">Hindi</option>
-            <option value="ta">Tamil</option>
-        </select>
-        <button class="btn btn-primary" style="margin-top:30px; width:100%;" onclick="closeAllDrawers()">Save</button>
-    </div>
-
     <div id="historyDrawer" class="right-drawer">
-        <h3 id="t-history-head">Meeting History</h3>
+        <h3>Meeting History</h3>
         <p style="font-size:13px; color:var(--text-muted);">No history found.</p>
     </div>
 
@@ -123,15 +91,15 @@
 
         <div class="content-area">
             <div id="idleState" class="minutes-box">
-                <h1 id="t-welcome">Meeting Minutes</h1>
-                <p id="t-desc" style="color:var(--text-muted)">Press start to record your session.</p>
-                <button class="btn btn-primary" onclick="startSession()" id="t-start-btn">▶ Start Session</button>
+                <h1>Meeting Hub</h1>
+                <p style="color:var(--text-muted)">Press start to record. The system will auto-extract action items.</p>
+                <button class="btn btn-primary" onclick="startSession()">▶ Start Session</button>
             </div>
 
             <div id="recordingState" class="minutes-box hidden">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <div style="width:10px; height:10px; background:red; border-radius:50%;" id="pulseDot"></div>
-                    <span style="color:red; font-weight:700; font-size:12px;" id="t-status">RECORDING LIVE</span>
+                    <span style="color:red; font-weight:700; font-size:12px;">RECORDING LIVE</span>
                 </div>
                 <div class="wave-box" id="waveContainer">
                     <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
@@ -145,22 +113,22 @@
 
             <div id="resultState" class="hidden">
                 <div class="minutes-box" id="minutesFinal" contenteditable="true">
-                    <div><span class="label" id="t-m-title">Meeting Title:</span> Meeting Session</div>
-                    <div><span class="label" id="t-m-date">Date:</span> <span id="resDate"></span></div>
-                    <div><span class="label" id="t-m-time">Time:</span> <span id="resTime"></span></div>
+                    <div><span class="label">Meeting Title:</span> Meeting Session</div>
+                    <div><span class="label">Date:</span> <span id="resDate"></span></div>
+                    <div><span class="label">Time:</span> <span id="resTime"></span></div>
                     <hr style="border:0; border-top:1px solid var(--border); margin:20px 0;">
-                    <div><span class="label" id="t-m-summary">📝 Discussion Summary</span><br><span id="resTranscript"></span></div>
+                    <div><span class="label">📝 Discussion Summary</span><br><span id="resTranscript"></span></div>
                     <br>
-                    <div><span class="label" id="t-m-actions">✅ Action Items</span><br>• </div>
+                    <div><span class="label">✅ Action Items</span><br><div id="resActions"></div></div>
                     <br>
-                    <div><span class="label" id="t-m-notes">📎 Additional Notes</span><br></div>
+                    <div><span class="label">📎 Additional Notes</span><br></div>
                     <br>
-                    <div><span class="label" id="t-m-next">📅 Next Meeting</span><br><span id="t-m-ndate">Date:</span> <br><span id="t-m-ntime">Time:</span> </div>
+                    <div><span class="label">📅 Next Meeting</span><br>Date: <br>Time: </div>
                     
                     <button class="btn btn-attach" onclick="document.getElementById('hiddenFile').click()">📎 Attach File</button>
                     <input type="file" id="hiddenFile" class="hidden">
                 </div>
-                <button class="btn btn-primary" style="background:#10b981; width:100%; margin-top:20px;" onclick="saveDoc()" id="t-save-btn">💾 Save as Text Document</button>
+                <button class="btn btn-primary" style="background:#10b981; width:100%; margin-top:20px;" onclick="saveDoc()">💾 Save as Text Document</button>
             </div>
         </div>
     </main>
@@ -169,66 +137,52 @@
         let rec; 
         let mainSpeech = ""; 
         let sideSpeech = ""; 
+        let actionItems = [];
         let isPaused = false;
         
-        const dict = {
-            en: { welcome: "Meeting Hub", desc: "Press start to record.", "start-btn": "▶ Start Session", status: "RECORDING LIVE", "m-title": "Meeting Title:", "m-date": "Date:", "m-time": "Time:", "m-summary": "📝 Discussion Summary", "m-actions": "✅ Action Items", "m-notes": "📎 Additional Notes", "m-next": "📅 Next Meeting", "save-btn": "💾 Save Document" },
-            ml: { welcome: "മീറ്റിംഗ് ഹബ്", desc: "റെക്കോർഡ് ചെയ്യാൻ സ്റ്റാർട്ട് അമർത്തുക.", "start-btn": "▶ സെഷൻ തുടങ്ങുക", status: "തത്സമയം", "m-title": "മീറ്റിംഗ് തലക്കെട്ട്:", "m-date": "തീയതി:", "m-time": "സമയം:", "m-summary": "📝 ചർച്ചാ സംഗ്രഹം", "m-actions": "✅ കർമ്മ പദ്ധതികൾ", "m-notes": "📎 അധിക കുറിപ്പുകൾ", "m-next": "📅 അടുത്ത മീറ്റിംഗ്", "save-btn": "💾 സേവ് ചെയ്യുക" },
-            ar: { welcome: "مركز الاجتماعات", desc: "اضغط على بدء للتسجيل.", "start-btn": "▶ ابدأ الجلسة", status: "مباشر", "m-title": "عنوان الاجتماع:", "m-date": "التاريخ:", "m-time": "الوقت:", "m-summary": "📝 ملخص المناقشة", "m-actions": "✅ بنود العمل", "m-notes": "📎 ملاحظات إضافية", "m-next": "📅 الاجتماع القادم", "save-btn": "💾 حفظ المستند" }
-        };
-
-        const irrelevantKeywords = ["haha", "hehe", "laugh", "giggle", "lunch", "weather", "did you see", "joke", "actually", "anyway", "whisper"];
+        const actionKeywords = ["tomorrow", "will", "must", "need to", "task", "assign", "scheduled"];
+        const irrelevantKeywords = ["haha", "hehe", "laugh", "giggle", "lunch", "weather"];
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('expanded'); }
         function toggleDrawer(id) { event.stopPropagation(); document.querySelectorAll('.right-drawer').forEach(d => d.classList.remove('open')); document.getElementById(id).classList.add('open'); }
         function closeAllDrawers() { document.querySelectorAll('.right-drawer').forEach(d => d.classList.remove('open')); }
-        function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); }
-        
-        function applyTranslation(lang) {
-            const t = dict[lang] || dict.en;
-            Object.keys(t).forEach(k => { const el = document.getElementById('t-'+k); if(el) el.innerText = t[k]; });
-        }
 
         function startSession() {
             const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if(!Speech) return alert("Speech Recognition not supported in this browser.");
+            if(!Speech) return alert("Not supported.");
             
             rec = new Speech(); 
             rec.continuous = true; 
             rec.interimResults = true;
-            rec.maxAlternatives = 1;
 
             document.getElementById('resDate').innerText = new Date().toLocaleDateString();
             document.getElementById('resTime').innerText = new Date().toLocaleTimeString();
 
             rec.onresult = (e) => {
                 if(isPaused) return;
-                let currentInterim = "";
+                let interim = "";
                 for (let i = e.resultIndex; i < e.results.length; ++i) {
-                    let transcript = e.results[i][0].transcript;
-                    let lowTranscript = transcript.toLowerCase();
-                    
+                    let transcript = e.results[i][0].transcript.trim();
                     if (e.results[i].isFinal) {
-                        // High-Sensitivity Categorization
-                        if (irrelevantKeywords.some(word => lowTranscript.includes(word)) || transcript.split(' ').length < 4) {
-                            sideSpeech += "• " + transcript + " (Side Talk)\n";
+                        let low = transcript.toLowerCase();
+                        // Categorization
+                        if (irrelevantKeywords.some(k => low.includes(k)) || transcript.split(' ').length < 3) {
+                            sideSpeech += "• " + transcript + "\n";
                         } else {
                             mainSpeech += transcript + ". ";
+                            // Action Item Extraction
+                            if (actionKeywords.some(k => low.includes(k))) {
+                                actionItems.push(transcript);
+                            }
                         }
                     } else {
-                        currentInterim += transcript;
+                        interim = transcript;
                     }
                 }
-                document.getElementById('liveText').innerText = (mainSpeech.split('.').pop() + currentInterim);
+                document.getElementById('liveText').innerText = interim || "Listening...";
             };
 
-            // Auto-Restart Logic to prevent the mic from timing out
-            rec.onend = () => {
-                if (!isPaused && !document.getElementById('recordingState').classList.contains('hidden')) {
-                    rec.start();
-                }
-            };
-
+            rec.onend = () => { if (!isPaused && !document.getElementById('recordingState').classList.contains('hidden')) rec.start(); };
             rec.start();
             document.getElementById('idleState').classList.add('hidden');
             document.getElementById('recordingState').classList.remove('hidden');
@@ -236,39 +190,24 @@
 
         function togglePause() {
             isPaused = !isPaused;
-            const btn = document.getElementById('pauseBtn');
-            const wave = document.getElementById('waveContainer');
-            if(isPaused) { 
-                btn.innerText = "▶ Resume"; 
-                wave.style.opacity = "0.2";
-                rec.stop();
-            } else { 
-                btn.innerText = "⏸ Pause"; 
-                wave.style.opacity = "1";
-                rec.start();
-            }
+            if(isPaused) { rec.stop(); document.getElementById('pauseBtn').innerText = "▶ Resume"; }
+            else { rec.start(); document.getElementById('pauseBtn').innerText = "⏸ Pause"; }
         }
 
         function stopSession() {
-            if(rec) {
-                rec.onend = null; 
-                rec.stop();
-            }
+            if(rec) { rec.onend = null; rec.stop(); }
             document.getElementById('recordingState').classList.add('hidden');
             document.getElementById('resultState').classList.remove('hidden');
             
-            // Injects categorized speech with distinct headers
-            const mainArea = document.getElementById('resTranscript');
-            mainArea.innerHTML = `<strong>Main Discussion:</strong><br>${mainSpeech || "No primary discussion recorded."}<br><br>` +
-                                 `<span style="color:#f59e0b;"><strong>Irrelevant/Side Chatter:</strong></span><br><i>${sideSpeech || "No side chatter detected."}</i>`;
+            document.getElementById('resTranscript').innerHTML = `<strong>Main Discussion:</strong><br>${mainSpeech}<br><br><span style="color:#f59e0b;"><strong>Side Chatter:</strong></span><br><i>${sideSpeech}</i>`;
+            
+            const actionContainer = document.getElementById('resActions');
+            actionContainer.innerHTML = actionItems.length > 0 ? actionItems.map(item => `• ${item}`).join('<br>') : "• No action items detected.";
         }
 
         function saveDoc() {
             const blob = new Blob([document.getElementById('minutesFinal').innerText], {type: 'text/plain'});
-            const a = document.createElement('a'); 
-            a.download = "Al_Anees_Minutes_Detailed.txt"; 
-            a.href = URL.createObjectURL(blob); 
-            a.click();
+            const a = document.createElement('a'); a.download = "Meeting_Minutes.txt"; a.href = URL.createObjectURL(blob); a.click();
         }
     </script>
 </body>
