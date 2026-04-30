@@ -88,7 +88,7 @@
             <span class="nav-label" id="t-nav-history">History</span>
         </div>
         <div class="nav-item" onclick="toggleDrawer('settingsDrawer')">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
             <span class="nav-label" id="t-nav-settings">Settings</span>
         </div>
     </nav>
@@ -166,12 +166,18 @@
     </main>
 
     <script>
-        let rec; let text = ""; let isPaused = false;
+        let rec; 
+        let mainSpeech = ""; 
+        let sideSpeech = ""; 
+        let isPaused = false;
+        
         const dict = {
             en: { welcome: "Meeting Hub", desc: "Press start to record.", "start-btn": "▶ Start Session", status: "RECORDING LIVE", "m-title": "Meeting Title:", "m-date": "Date:", "m-time": "Time:", "m-summary": "📝 Discussion Summary", "m-actions": "✅ Action Items", "m-notes": "📎 Additional Notes", "m-next": "📅 Next Meeting", "save-btn": "💾 Save Document" },
             ml: { welcome: "മീറ്റിംഗ് ഹബ്", desc: "റെക്കോർഡ് ചെയ്യാൻ സ്റ്റാർട്ട് അമർത്തുക.", "start-btn": "▶ സെഷൻ തുടങ്ങുക", status: "തത്സമയം", "m-title": "മീറ്റിംഗ് തലക്കെട്ട്:", "m-date": "തീയതി:", "m-time": "സമയം:", "m-summary": "📝 ചർച്ചാ സംഗ്രഹം", "m-actions": "✅ കർമ്മ പദ്ധതികൾ", "m-notes": "📎 അധിക കുറിപ്പുകൾ", "m-next": "📅 അടുത്ത മീറ്റിംഗ്", "save-btn": "💾 സേവ് ചെയ്യുക" },
             ar: { welcome: "مركز الاجتماعات", desc: "اضغط على بدء للتسجيل.", "start-btn": "▶ ابدأ الجلسة", status: "مباشر", "m-title": "عنوان الاجتماع:", "m-date": "التاريخ:", "m-time": "الوقت:", "m-summary": "📝 ملخص المناقشة", "m-actions": "✅ بنود العمل", "m-notes": "📎 ملاحظات إضافية", "m-next": "📅 الاجتماع القادم", "save-btn": "💾 حفظ المستند" }
         };
+
+        const irrelevantKeywords = ["haha", "hehe", "laugh", "giggle", "lunch", "weather", "did you see", "joke", "actually", "anyway", "whisper"];
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('expanded'); }
         function toggleDrawer(id) { event.stopPropagation(); document.querySelectorAll('.right-drawer').forEach(d => d.classList.remove('open')); document.getElementById(id).classList.add('open'); }
@@ -186,18 +192,43 @@
         function startSession() {
             const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
             if(!Speech) return alert("Speech Recognition not supported in this browser.");
-            rec = new Speech(); rec.continuous = true; rec.interimResults = true;
+            
+            rec = new Speech(); 
+            rec.continuous = true; 
+            rec.interimResults = true;
+            rec.maxAlternatives = 1;
+
             document.getElementById('resDate').innerText = new Date().toLocaleDateString();
             document.getElementById('resTime').innerText = new Date().toLocaleTimeString();
+
             rec.onresult = (e) => {
                 if(isPaused) return;
-                let inter = "";
+                let currentInterim = "";
                 for (let i = e.resultIndex; i < e.results.length; ++i) {
-                    if (e.results[i].isFinal) text += e.results[i][0].transcript + " ";
-                    else inter += e.results[i][0].transcript;
+                    let transcript = e.results[i][0].transcript;
+                    let lowTranscript = transcript.toLowerCase();
+                    
+                    if (e.results[i].isFinal) {
+                        // High-Sensitivity Categorization
+                        if (irrelevantKeywords.some(word => lowTranscript.includes(word)) || transcript.split(' ').length < 4) {
+                            sideSpeech += "• " + transcript + " (Side Talk)\n";
+                        } else {
+                            mainSpeech += transcript + ". ";
+                        }
+                    } else {
+                        currentInterim += transcript;
+                    }
                 }
-                document.getElementById('liveText').innerText = text + inter;
+                document.getElementById('liveText').innerText = (mainSpeech.split('.').pop() + currentInterim);
             };
+
+            // Auto-Restart Logic to prevent the mic from timing out
+            rec.onend = () => {
+                if (!isPaused && !document.getElementById('recordingState').classList.contains('hidden')) {
+                    rec.start();
+                }
+            };
+
             rec.start();
             document.getElementById('idleState').classList.add('hidden');
             document.getElementById('recordingState').classList.remove('hidden');
@@ -207,20 +238,37 @@
             isPaused = !isPaused;
             const btn = document.getElementById('pauseBtn');
             const wave = document.getElementById('waveContainer');
-            if(isPaused) { btn.innerText = "▶ Resume"; wave.style.opacity = "0.2"; }
-            else { btn.innerText = "⏸ Pause"; wave.style.opacity = "1"; }
+            if(isPaused) { 
+                btn.innerText = "▶ Resume"; 
+                wave.style.opacity = "0.2";
+                rec.stop();
+            } else { 
+                btn.innerText = "⏸ Pause"; 
+                wave.style.opacity = "1";
+                rec.start();
+            }
         }
 
         function stopSession() {
-            if(rec) rec.stop();
+            if(rec) {
+                rec.onend = null; 
+                rec.stop();
+            }
             document.getElementById('recordingState').classList.add('hidden');
             document.getElementById('resultState').classList.remove('hidden');
-            document.getElementById('resTranscript').innerText = text;
+            
+            // Injects categorized speech with distinct headers
+            const mainArea = document.getElementById('resTranscript');
+            mainArea.innerHTML = `<strong>Main Discussion:</strong><br>${mainSpeech || "No primary discussion recorded."}<br><br>` +
+                                 `<span style="color:#f59e0b;"><strong>Irrelevant/Side Chatter:</strong></span><br><i>${sideSpeech || "No side chatter detected."}</i>`;
         }
 
         function saveDoc() {
             const blob = new Blob([document.getElementById('minutesFinal').innerText], {type: 'text/plain'});
-            const a = document.createElement('a'); a.download = "Meeting_Minutes.txt"; a.href = URL.createObjectURL(blob); a.click();
+            const a = document.createElement('a'); 
+            a.download = "Al_Anees_Minutes_Detailed.txt"; 
+            a.href = URL.createObjectURL(blob); 
+            a.click();
         }
     </script>
 </body>
