@@ -1,782 +1,1070 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>AL ANEES — Meeting Recorder</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#1565C0"/>
+<title>AL ANEES — AI Meeting Recorder</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0;}
-  :root{
-    --brand:#0F6E56;--bl:#E1F5EE;--bm:#1D9E75;--bd:#085041;
-    --bg:#F7F7F8;--bg2:#EFEFEF;--bg3:#E5E5E5;
-    --surface:#FFFFFF;
-    --border:#D9D9D9;--border2:#C4C4C4;
-    --text:#1A1A1A;--text2:#555;--text3:#888;
-    --info-bg:#EBF4FF;--info:#1565C0;--info-border:#A8CAEE;
-    --warn-bg:#FFF8EC;--warn:#854F0B;--warn-border:#F3CC80;
-    --danger-bg:#FFF0F0;--danger:#C0392B;--danger-border:#F5A5A5;
-    --success-bg:#E8F8F2;--success:#0F6E56;
-    --purple-bg:#EEEDFE;--purple:#534AB7;
-    --radius:8px;--radius-sm:6px;--radius-lg:12px;
-    --font:'Segoe UI',system-ui,-apple-system,sans-serif;
-    --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.05);
-    --shadow-md:0 4px 12px rgba(0,0,0,0.10);
-  }
-  body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px;}
+/* ═══ RESET ═══ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;width:100%;overflow:hidden;}
 
-  /* ── APP SHELL ── */
-  .app{width:100%;max-width:1100px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-md);border:0.5px solid var(--border);}
+/* ═══ VARIABLES ═══ */
+:root{
+  --brand:#0F6E56;--bl:#E1F5EE;--bm:#1D9E75;--bd:#085041;
+  --blue:#1565C0;--bluel:#EBF4FF;--blueb:#A8CAEE;
+  --bg:#F2F4F7;--surf:#fff;--bdr:#E2E6EA;--bdr2:#C8CDD4;
+  --tx:#111827;--tx2:#4B5563;--tx3:#9CA3AF;
+  --red:#DC2626;--redbg:#FEF2F2;--redb:#FCA5A5;
+  --warn:#92400E;--warnbg:#FFFBEB;
+  --pur:#5B21B6;--purbg:#EDE9FE;
+  --amb:#92400E;--ambbg:#FEF3C7;
+  --grn:#065F46;--grnbg:#ECFDF5;
+  --r:8px;--rsm:6px;--rlg:14px;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --sh:0 1px 3px rgba(0,0,0,.08);
+  --shm:0 4px 20px rgba(0,0,0,.12);
+  --hdr-h:54px;
+  --bot-h:140px;
+}
 
-  /* ── BANNER ── */
-  .banner{background:linear-gradient(135deg,#1565C0 0%,#1976D2 60%,#42A5F5 100%);padding:14px 22px;display:flex;align-items:center;gap:14px;}
-  .b-logo{width:40px;height:40px;border-radius:9px;overflow:hidden;flex-shrink:0;background:white;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.2);}
-  .b-logo img{width:100%;height:100%;object-fit:cover;display:block;}
-  .b-info{flex:1;}
-  .b-title{font-size:15px;font-weight:700;color:white;letter-spacing:.01em;}
-  .b-sub{font-size:11px;color:rgba(255,255,255,0.78);margin-top:1px;}
-  .b-pill{font-size:11px;padding:4px 12px;border-radius:999px;background:rgba(255,255,255,0.15);color:white;border:0.5px solid rgba(255,255,255,0.3);font-weight:500;white-space:nowrap;}
+/* ═══ APP SHELL ═══ */
+body{font-family:var(--font);background:var(--bg);display:flex;flex-direction:column;}
+.app{display:flex;flex-direction:column;width:100vw;height:100vh;height:100dvh;overflow:hidden;}
 
-  /* ── LAYOUT ── */
-  .layout{display:flex;min-height:560px;background:var(--surface);}
-  .left{flex:1;display:flex;flex-direction:column;border-right:0.5px solid var(--border);}
-  .right{width:220px;background:var(--surface);display:flex;flex-direction:column;flex-shrink:0;}
+/* ═══ HEADER ═══ */
+.hdr{
+  height:var(--hdr-h);
+  background:linear-gradient(135deg,#1565C0 0%,#1976D2 55%,#1E88E5 100%);
+  display:flex;align-items:center;gap:10px;padding:0 14px;
+  flex-shrink:0;z-index:200;
+  box-shadow:0 2px 10px rgba(21,101,192,.4);
+}
+.hdr-logo{width:36px;height:36px;border-radius:9px;overflow:hidden;flex-shrink:0;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25);}
+.hdr-logo img{width:100%;height:100%;object-fit:cover;display:block;}
+.hdr-info{flex:1;min-width:0;}
+.hdr-name{font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hdr-sub{font-size:9.5px;color:rgba(255,255,255,.7);margin-top:1px;}
+.hdr-right{display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:#4ADE80;box-shadow:0 0 6px #4ADE80;flex-shrink:0;}
+.ai-lbl{font-size:9.5px;color:rgba(255,255,255,.9);font-weight:700;}
+.status-pill{font-size:10.5px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.28);font-weight:700;white-space:nowrap;}
 
-  /* ── META PANEL ── */
-  .meta-panel{padding:14px 18px;border-bottom:0.5px solid var(--border);background:var(--surface);}
-  .mg2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
-  .mg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
-  .mf{display:flex;flex-direction:column;gap:4px;}
-  .ml{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
-  .mi{border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12.5px;background:var(--bg);color:var(--text);font-family:var(--font);outline:none;width:100%;transition:border-color .15s;}
-  .mi:focus{border-color:var(--bm);background:white;}
-  .mi::placeholder{color:var(--text3);}
-  .mi[readonly]{background:var(--bg2);color:var(--text2);cursor:default;}
+/* ═══ SCROLL AREA ═══ */
+.scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:20px;}
 
-  /* ── REC BAR ── */
-  .rec-bar{padding:12px 18px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--surface);flex-wrap:wrap;gap:10px;}
-  .rec-btn{width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .1s,box-shadow .1s;box-shadow:var(--shadow);}
-  .rec-btn:active{transform:scale(.94);}
-  .rb-idle{background:var(--brand);}
-  .rb-rec{background:var(--danger-bg);border:2px solid var(--danger);}
-  .rb-pau{background:var(--warn-bg);border:2px solid var(--warn);}
-  .rec-btn svg{width:18px;height:18px;fill:currentColor;}
-  .rb-idle svg{color:white;}.rb-rec svg{color:var(--danger);}.rb-pau svg{color:var(--warn);}
-  .rec-info{flex:1;}
-  .rec-label{font-size:11.5px;color:var(--text3);}
-  .rec-timer{font-size:22px;font-weight:600;color:var(--brand);font-variant-numeric:tabular-nums;letter-spacing:.02em;}
-  .wave{display:flex;align-items:center;gap:2px;height:26px;margin-top:5px;}
-  .wb{width:3px;border-radius:2px;background:var(--border2);transition:height .1s;}
-  .wb-on{background:var(--bm);}
-  .ctl{display:flex;gap:6px;align-items:center;}
-  .ib{padding:6px 12px;border-radius:var(--radius-sm);font-size:11.5px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--font);display:flex;align-items:center;gap:4px;transition:background .15s,border-color .15s;white-space:nowrap;}
-  .ib svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;}
-  .ib:hover{background:var(--bg);border-color:var(--border2);}
-  .ib:disabled{opacity:.38;cursor:not-allowed;}
-  .ib-danger{color:var(--danger);border-color:var(--danger-border);}
-  .ib-danger:hover{background:var(--danger-bg);}
+/* ═══ CARDS ═══ */
+.card{background:var(--surf);border-bottom:1px solid var(--bdr);padding:13px 14px;}
 
-  /* ── LANG BAR ── */
-  .lang-bar{padding:6px 18px;border-bottom:0.5px solid var(--border);background:var(--bg);display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
-  .lb-label{font-size:10.5px;color:var(--text3);font-weight:600;}
-  .lang-chip{font-size:10.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text3);cursor:pointer;transition:all .15s;user-select:none;}
-  .lang-chip:hover{background:var(--bg2);}
-  .lang-chip.active{background:var(--bl);color:var(--brand);border-color:#9FE1CB;font-weight:600;}
-  .detected-pill{font-size:10px;padding:2px 9px;border-radius:999px;background:var(--purple-bg);color:var(--purple);margin-left:auto;font-weight:500;}
+/* ═══ INPUTS ═══ */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.field{display:flex;flex-direction:column;gap:3px;}
+.lbl{font-size:9.5px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;}
+.inp{border:1px solid var(--bdr);border-radius:var(--rsm);padding:8px 10px;font-size:13px;background:var(--bg);color:var(--tx);font-family:inherit;outline:none;width:100%;transition:border-color .15s,box-shadow .15s;}
+.inp:focus{border-color:var(--bm);background:#fff;box-shadow:0 0 0 3px rgba(29,158,117,.12);}
+.inp::placeholder{color:var(--tx3);}
+.inp[readonly]{background:#EFEFEF;color:var(--tx2);}
 
-  /* ── TRANSCRIPT PANEL ── */
-  .tx-panel{flex:1;display:flex;flex-direction:column;}
-  .tx-head{padding:9px 18px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:8px;background:var(--surface);}
-  .tx-icon{width:22px;height:22px;border-radius:6px;background:var(--bl);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .tx-icon svg{width:12px;height:12px;stroke:var(--brand);fill:none;stroke-width:2;}
-  .tx-title{font-size:12.5px;font-weight:600;color:var(--text);}
-  .edit-hint{font-size:10px;color:var(--text3);padding:2px 7px;border-radius:999px;background:var(--bg);border:1px solid var(--border);}
-  .tx-count{font-size:10.5px;color:var(--text3);margin-left:auto;}
-  .tx-body{flex:1;overflow-y:auto;max-height:230px;padding:10px 18px;display:flex;flex-direction:column;gap:6px;}
-  .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;gap:8px;color:var(--text3);}
-  .empty svg{width:30px;height:30px;stroke:var(--text3);fill:none;stroke-width:1.5;}
-  .empty span{font-size:12.5px;}
-  .seg{display:flex;gap:8px;align-items:flex-start;}
-  .seg-ts{font-size:10px;color:var(--text3);white-space:nowrap;margin-top:5px;min-width:36px;font-variant-numeric:tabular-nums;}
-  .seg-lang{font-size:9.5px;padding:2px 6px;border-radius:999px;background:var(--purple-bg);color:var(--purple);white-space:nowrap;margin-top:4px;flex-shrink:0;font-weight:600;}
-  .seg-text{flex:1;font-size:12.5px;color:var(--text);line-height:1.65;border:1px solid transparent;border-radius:6px;padding:4px 9px;background:var(--bg);outline:none;min-height:28px;white-space:pre-wrap;word-break:break-word;font-family:var(--font);transition:border-color .15s,background .15s;}
-  .seg-text:focus{border-color:var(--bm);background:white;}
-  .seg-text.new-seg{background:var(--bl);border-color:#9FE1CB;}
-  .seg-del{width:20px;height:20px;border-radius:4px;border:none;background:none;cursor:pointer;color:var(--text3);font-size:15px;display:flex;align-items:center;justify-content:center;margin-top:3px;flex-shrink:0;transition:background .15s,color .15s;}
-  .seg-del:hover{background:var(--danger-bg);color:var(--danger);}
-  .interim{font-size:11px;color:var(--text3);font-style:italic;padding:3px 9px;animation:pulse 1.5s infinite;}
-  @keyframes pulse{0%,100%{opacity:.6;}50%{opacity:1;}}
+/* ═══ RECORDER ═══ */
+.rec-card{background:var(--surf);border-bottom:1px solid var(--bdr);padding:14px;}
+.rec-top{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+.rec-btn{width:58px;height:58px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--sh);transition:transform .12s;touch-action:manipulation;-webkit-user-select:none;user-select:none;}
+.rec-btn:active{transform:scale(.88);}
+.rb-idle{background:var(--brand);}
+.rb-rec{background:var(--redbg);border:2.5px solid var(--red);animation:pulse 2s ease-in-out infinite;}
+.rb-pau{background:var(--warnbg);border:2.5px solid var(--warn);}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.4);}50%{box-shadow:0 0 0 12px rgba(220,38,38,0);}}
+.rbi svg{width:24px;height:24px;fill:currentColor;}
+.rb-idle .rbi svg{color:#fff;}.rb-rec .rbi svg{color:var(--red);}.rb-pau .rbi svg{color:var(--warn);}
+.rec-meta{flex:1;}
+.rec-lbl{font-size:11px;color:var(--tx3);margin-bottom:2px;}
+.rec-timer{font-size:30px;font-weight:800;color:var(--brand);font-variant-numeric:tabular-nums;line-height:1;}
+.wave{display:flex;align-items:center;gap:2px;height:26px;margin-top:6px;}
+.wb{width:3px;border-radius:2px;background:var(--bdr2);transition:height .08s;}
+.wb-on{background:var(--bm);}
+.rec-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.btn{padding:10px 14px;border-radius:var(--rsm);font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--bdr);background:var(--surf);color:var(--tx);font-family:inherit;display:flex;align-items:center;gap:5px;touch-action:manipulation;-webkit-user-select:none;user-select:none;transition:background .12s;}
+.btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;}
+.btn:active{opacity:.7;}
+.btn:disabled{opacity:.3;cursor:not-allowed;}
+.btn-stop{color:var(--red);border-color:var(--redb);}
+.btn-stop:active{background:var(--redbg);}
 
-  /* ── FILES PANEL ── */
-  .files-panel{border-top:0.5px solid var(--border);padding:11px 18px;background:var(--surface);}
-  .fp-head{display:flex;align-items:center;gap:7px;margin-bottom:7px;}
-  .fp-icon{width:20px;height:20px;border-radius:5px;background:var(--warn-bg);display:flex;align-items:center;justify-content:center;}
-  .fp-icon svg{width:11px;height:11px;stroke:var(--warn);fill:none;stroke-width:2;}
-  .fp-title{font-size:12px;font-weight:600;color:var(--text);}
-  .fc{font-size:10.5px;color:var(--text3);margin-left:auto;}
-  .drop-zone{border:1.5px dashed var(--border2);border-radius:var(--radius-sm);padding:8px 12px;text-align:center;cursor:pointer;font-size:11.5px;color:var(--text3);transition:background .15s,border-color .15s;}
-  .drop-zone:hover{background:var(--bg);border-color:var(--brand);}
-  .drop-zone.dragover{background:var(--bl);border-color:var(--brand);}
-  .file-list{display:flex;flex-direction:column;gap:4px;margin-top:6px;}
-  .file-item{display:flex;align-items:center;gap:6px;padding:4px 9px;background:var(--bg);border-radius:5px;border:0.5px solid var(--border);}
-  .fi-icon{font-size:13px;width:20px;text-align:center;}
-  .fi-name{font-size:11.5px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .fi-size{font-size:10px;color:var(--text3);flex-shrink:0;}
-  .fi-del{border:none;background:none;cursor:pointer;color:var(--text3);font-size:14px;padding:0 2px;transition:color .15s;}
-  .fi-del:hover{color:var(--danger);}
+/* ═══ AI QUALITY BAR ═══ */
+.ai-bar{background:linear-gradient(90deg,#F0FDF4,#EFF6FF);border-bottom:1px solid var(--bdr);padding:8px 14px;display:flex;align-items:center;gap:8px;}
+.ai-bar-dot{width:8px;height:8px;border-radius:50%;background:var(--bm);flex-shrink:0;}
+.ai-bar-txt{font-size:11px;color:var(--grn);font-weight:700;}
 
-  /* ── RIGHT PANEL ── */
-  .rp-sec{padding:12px 14px;border-bottom:0.5px solid var(--border);}
-  .rp-t{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
-  .stat-g{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
-  .sc{background:var(--bg);border-radius:var(--radius-sm);padding:9px 6px;text-align:center;border:0.5px solid var(--border);}
-  .sv{font-size:18px;font-weight:600;color:var(--text);}
-  .sl{font-size:9.5px;color:var(--text3);margin-top:1px;}
+/* ═══ STATS ═══ */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);background:var(--surf);border-bottom:1px solid var(--bdr);}
+.sc{padding:10px 6px;text-align:center;border-right:1px solid var(--bdr);}
+.sc:last-child{border-right:none;}
+.sv{font-size:20px;font-weight:800;color:var(--tx);}
+.sl{font-size:9.5px;color:var(--tx3);margin-top:1px;}
 
-  /* ── DOWNLOAD BUTTONS ── */
-  .dl-section{padding:12px 14px;border-bottom:0.5px solid var(--border);}
-  .dl-btn{width:100%;padding:7px 10px;background:var(--info-bg);color:var(--info);border:1px solid var(--info-border);border-radius:var(--radius-sm);font-size:11.5px;font-weight:500;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:6px;margin-bottom:5px;transition:background .15s,opacity .15s;}
-  .dl-btn svg{width:12px;height:12px;stroke:var(--info);fill:none;stroke-width:2;flex-shrink:0;}
-  .dl-btn:hover{background:#d0e8ff;}
-  .dl-btn:disabled{opacity:.35;cursor:not-allowed;}
+/* ═══ LOG ═══ */
+.log-card{background:var(--surf);border-bottom:1px solid var(--bdr);}
+.log-head{padding:9px 14px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:7px;}
+.log-ico{width:20px;height:20px;border-radius:5px;background:var(--ambbg);display:flex;align-items:center;justify-content:center;}
+.log-ico svg{width:11px;height:11px;stroke:var(--amb);fill:none;stroke-width:2;}
+.log-title{font-size:12px;font-weight:700;color:var(--tx);}
+.log-note{font-size:10px;color:var(--tx3);margin-left:auto;}
+.log-body{max-height:140px;overflow-y:auto;padding:8px 14px;-webkit-overflow-scrolling:touch;}
+.log-empty{font-size:12px;color:var(--tx3);font-style:italic;text-align:center;padding:14px 0;}
+.log-item{font-size:12px;color:var(--tx2);padding:4px 0;border-bottom:.5px solid var(--bdr);line-height:1.55;}
+.log-item:last-child{border:none;}
+.log-ts{font-size:10px;color:var(--tx3);font-variant-numeric:tabular-nums;margin-right:4px;}
+.log-lang{font-size:9px;padding:1px 5px;border-radius:999px;background:var(--purbg);color:var(--pur);margin-right:4px;font-weight:700;}
 
-  /* ── AI BUTTONS ── */
-  .ai-section{padding:12px 14px;flex:1;}
-  .ai-btn{width:100%;padding:7px 10px;background:var(--bl);color:var(--brand);border:1px solid #9FE1CB;border-radius:var(--radius-sm);font-size:11.5px;font-weight:500;cursor:pointer;font-family:var(--font);text-align:left;display:flex;align-items:center;gap:6px;margin-bottom:5px;transition:background .15s;}
-  .ai-btn svg{width:12px;height:12px;stroke:var(--brand);fill:none;stroke-width:2;flex-shrink:0;}
-  .ai-btn:hover{background:#9FE1CB;}
-  .ai-btn:disabled{opacity:.35;cursor:not-allowed;}
-  .notice{font-size:10.5px;color:var(--text3);line-height:1.55;padding:6px 8px;background:var(--bg);border-radius:5px;border-left:2.5px solid var(--bm);margin-top:6px;}
+/* ═══ FINALIZE EMPTY ═══ */
+.fin-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 22px;gap:10px;color:var(--tx3);text-align:center;background:var(--surf);border-bottom:1px solid var(--bdr);}
+.fin-empty svg{width:46px;height:46px;stroke:var(--tx3);fill:none;stroke-width:1.5;}
+.fin-empty h3{font-size:15px;color:var(--tx2);font-weight:700;}
+.fin-empty p{font-size:12.5px;line-height:1.7;max-width:300px;color:var(--tx3);}
 
-  /* ── MODAL ── */
-  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:999;align-items:center;justify-content:center;}
-  .modal-overlay.open{display:flex;}
-  .modal{background:white;border-radius:var(--radius-lg);padding:24px;max-width:480px;width:90%;box-shadow:var(--shadow-md);}
-  .modal h3{font-size:15px;margin-bottom:8px;color:var(--text);}
-  .modal p{font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6;}
-  .modal-btns{display:flex;gap:8px;justify-content:flex-end;}
-  .modal-close{padding:7px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--font);font-size:13px;cursor:pointer;}
-  .modal-close:hover{background:var(--bg);}
+/* ═══ MINUTES DOC ═══ */
+.doc-toolbar{background:var(--bg);border-bottom:1px solid var(--bdr);padding:8px 14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.dt-lbl{font-size:12px;font-weight:700;color:var(--tx);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tbtn{padding:6px 12px;border-radius:var(--rsm);font-size:11.5px;font-weight:600;cursor:pointer;border:1px solid var(--bdr);background:var(--surf);color:var(--tx);font-family:inherit;display:flex;align-items:center;gap:4px;touch-action:manipulation;-webkit-user-select:none;user-select:none;}
+.tbtn svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;}
+.tbtn:active{background:var(--bg);}
+.tbtn.pri{background:var(--brand);color:#fff;border-color:var(--brand);}
+.tbtn.pri:active{background:var(--bd);}
+.min-doc-wrap{padding:14px;background:var(--bg);}
+.min-hdr{background:var(--surf);border-radius:var(--rlg);padding:16px;margin-bottom:12px;border:1px solid var(--bdr);}
+.min-co{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.min-co-logo{width:34px;height:34px;border-radius:8px;overflow:hidden;border:1px solid var(--bdr);flex-shrink:0;}
+.min-co-logo img{width:100%;height:100%;object-fit:cover;}
+.min-co-name{font-size:15px;font-weight:700;color:var(--tx);}
+.min-co-sub{font-size:10px;color:var(--tx3);}
+.min-title-in{width:100%;border:none;background:none;font-size:20px;font-weight:800;color:var(--tx);font-family:inherit;outline:none;margin-bottom:10px;border-bottom:1.5px solid transparent;padding-bottom:4px;}
+.min-title-in:focus{border-bottom-color:var(--bm);}
+.min-mg{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.min-mf{display:flex;flex-direction:column;gap:3px;}
+.min-ml{font-size:9.5px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;}
+.min-mv{border:1px solid var(--bdr);border-radius:var(--rsm);padding:6px 9px;font-size:12.5px;background:var(--bg);color:var(--tx);font-family:inherit;outline:none;width:100%;}
+.min-mv:focus{border-color:var(--bm);background:#fff;}
+.min-sec{background:var(--surf);border-radius:var(--rlg);padding:14px;margin-bottom:10px;border:1px solid var(--bdr);}
+.min-sec-hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.msico{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.msico svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;}
+.msico.grn{background:var(--grnbg);color:var(--grn);}
+.msico.amb{background:var(--ambbg);color:var(--amb);}
+.msico.blu{background:var(--bluel);color:var(--blue);}
+.msico.pur{background:var(--purbg);color:var(--pur);}
+.msico.brd{background:var(--bl);color:var(--brand);}
+.min-sec-title{font-size:13px;font-weight:700;color:var(--tx);}
+.sec-add{margin-left:auto;font-size:11px;color:var(--brand);cursor:pointer;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--bl);border:1px solid #9FE1CB;touch-action:manipulation;}
+.sec-add:active{background:#9FE1CB;}
+.mta{width:100%;border:1px solid var(--bdr);border-radius:var(--rsm);padding:10px 12px;font-size:13px;font-family:inherit;color:var(--tx);resize:vertical;outline:none;line-height:1.75;min-height:90px;background:var(--bg);}
+.mta:focus{border-color:var(--bm);background:#fff;}
+/* Attendees */
+.att-list{display:flex;flex-direction:column;gap:8px;}
+.att-row{display:flex;align-items:center;gap:8px;}
+.att-av{width:30px;height:30px;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.att-in{flex:1;border:1px solid var(--bdr);border-radius:var(--rsm);padding:8px 10px;font-size:12.5px;font-family:inherit;background:var(--bg);color:var(--tx);outline:none;}
+.att-in:focus{border-color:var(--bm);background:#fff;}
+.att-role{width:90px;flex:none;}
+.att-del{border:none;background:none;cursor:pointer;color:var(--tx3);font-size:20px;padding:0 3px;line-height:1;touch-action:manipulation;}
+/* Actions */
+.act-list{display:flex;flex-direction:column;gap:8px;}
+.act-row{background:var(--bg);border-radius:var(--rsm);border:1px solid var(--bdr);padding:11px 12px;display:flex;align-items:flex-start;gap:9px;}
+.act-row.done-row{opacity:.5;}
+.act-cb{width:19px;height:19px;border-radius:5px;border:1.5px solid var(--bdr2);flex-shrink:0;cursor:pointer;margin-top:2px;appearance:none;background:#fff;transition:all .15s;}
+.act-cb:checked{background:var(--brand);border-color:var(--brand);background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 12 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 6l3 3 5-5' stroke='white' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;}
+.act-body{flex:1;min-width:0;}
+.act-text{width:100%;border:none;background:none;font-size:13px;color:var(--tx);font-family:inherit;outline:none;line-height:1.5;padding:0;}
+.act-tags{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap;align-items:center;}
+.tag-lbl{font-size:10px;padding:2px 7px;border-radius:999px;font-weight:700;}
+.tag-o{background:var(--bluel);color:var(--blue);}
+.tag-d{background:var(--ambbg);color:var(--amb);}
+.tag-in{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--bdr);background:var(--surf);color:var(--tx);font-family:inherit;outline:none;width:100px;}
+.tag-in-d{width:130px;}
+.tag-in:focus{border-color:var(--bm);}
+.pri-badge{font-size:10px;padding:3px 10px;border-radius:999px;font-weight:700;cursor:pointer;border:none;font-family:inherit;touch-action:manipulation;}
+.act-del{border:none;background:none;cursor:pointer;color:var(--tx3);font-size:20px;flex-shrink:0;padding:0 2px;line-height:1;touch-action:manipulation;}
+/* Signatures */
+.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.sig-box{border-top:1.5px solid var(--bdr2);padding-top:8px;}
+.sig-role{font-size:10.5px;color:var(--tx3);margin-top:5px;}
 
-  /* ── FOOTER ── */
-  .footer{margin-top:14px;font-size:11px;color:var(--text3);text-align:center;}
+/* ═══ FILES ═══ */
+.files-card{background:var(--surf);border-bottom:1px solid var(--bdr);padding:13px 14px;}
+.files-head{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+.files-ico{width:20px;height:20px;border-radius:5px;background:var(--warnbg);display:flex;align-items:center;justify-content:center;}
+.files-ico svg{width:11px;height:11px;stroke:var(--warn);fill:none;stroke-width:2;}
+.files-title{font-size:12px;font-weight:700;color:var(--tx);}
+.files-count{font-size:10.5px;color:var(--tx3);margin-left:auto;}
+.dz{border:1.5px dashed var(--bdr2);border-radius:var(--rsm);padding:12px;text-align:center;cursor:pointer;font-size:12px;color:var(--tx3);transition:all .15s;touch-action:manipulation;}
+.dz.ov,.dz:active{background:var(--bl);border-color:var(--brand);color:var(--brand);}
+.f-list{display:flex;flex-direction:column;gap:4px;margin-top:8px;}
+.f-item{display:flex;align-items:center;gap:7px;padding:5px 10px;background:var(--bg);border-radius:var(--rsm);border:.5px solid var(--bdr);}
+.f-ico{font-size:14px;flex-shrink:0;}
+.f-name{font-size:12px;color:var(--tx);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.f-sz{font-size:10px;color:var(--tx3);flex-shrink:0;}
+.f-del{border:none;background:none;cursor:pointer;color:var(--tx3);font-size:18px;padding:0 2px;touch-action:manipulation;}
 
-  /* ── SCROLLBAR ── */
-  .tx-body::-webkit-scrollbar{width:5px;}
-  .tx-body::-webkit-scrollbar-track{background:transparent;}
-  .tx-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+/* ═══ BOTTOM BAR ═══ */
+.bottom-bar{
+  flex-shrink:0;
+  background:var(--surf);
+  border-top:1px solid var(--bdr);
+  padding:10px 14px;
+  display:flex;flex-direction:column;gap:8px;
+  box-shadow:0 -2px 12px rgba(0,0,0,.08);
+  z-index:100;
+}
+.fin-btn{
+  width:100%;padding:14px;
+  background:var(--brand);color:#fff;border:none;
+  border-radius:var(--rlg);font-size:15px;font-weight:800;
+  cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 3px 12px rgba(15,110,86,.35);
+  touch-action:manipulation;-webkit-user-select:none;user-select:none;
+}
+.fin-btn svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.5;}
+.fin-btn:active{background:var(--bd);}
+.fin-btn:disabled{background:var(--bdr2);box-shadow:none;}
+.quick-row{display:flex;gap:7px;}
+.qbtn{flex:1;padding:9px 6px;border-radius:var(--rsm);font-size:11.5px;font-weight:700;cursor:pointer;border:1px solid var(--bdr);background:var(--surf);color:var(--tx);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px;touch-action:manipulation;-webkit-user-select:none;user-select:none;}
+.qbtn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;}
+.qbtn:active{background:var(--bg);}
+.qbtn:disabled{opacity:.3;cursor:not-allowed;}
+.dl-row{display:flex;gap:7px;}
+.dlbtn{flex:1;padding:9px 6px;border-radius:var(--rsm);font-size:11px;font-weight:700;cursor:pointer;background:var(--bluel);color:var(--blue);border:1px solid var(--blueb);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px;touch-action:manipulation;-webkit-user-select:none;user-select:none;}
+.dlbtn svg{width:11px;height:11px;stroke:var(--blue);fill:none;stroke-width:2;}
+.dlbtn:active{background:#C5DEFA;}
+.dlbtn:disabled{opacity:.3;cursor:not-allowed;}
 
-  @media(max-width:680px){
-    .layout{flex-direction:column;}
-    .right{width:100%;border-top:0.5px solid var(--border);}
-    .left{border-right:none;}
-    .mg3{grid-template-columns:1fr 1fr;}
-  }
+/* ═══ LOADING ═══ */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;align-items:center;justify-content:center;padding:24px;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);}
+.ov.on{display:flex;}
+.ov-box{background:#fff;border-radius:var(--rlg);padding:32px 28px;text-align:center;width:100%;max-width:300px;box-shadow:var(--shm);}
+.spin{width:46px;height:46px;border:3px solid var(--bl);border-top-color:var(--brand);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ov-title{font-size:15px;font-weight:800;color:var(--tx);margin-bottom:5px;}
+.ov-sub{font-size:12px;color:var(--tx3);line-height:1.6;}
+.ov-ai{margin-top:12px;font-size:10.5px;color:var(--bm);font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;}
+.ov-dot{width:6px;height:6px;border-radius:50%;background:var(--bm);animation:bp 1.2s ease-in-out infinite;}
+@keyframes bp{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.6);}}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:calc(var(--bot-h) + 14px);left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:600;opacity:0;transition:opacity .3s;z-index:1000;pointer-events:none;white-space:nowrap;box-shadow:var(--shm);max-width:90vw;overflow:hidden;text-overflow:ellipsis;}
+.toast.on{opacity:1;}
+
+/* ═══ DESKTOP SPLIT LAYOUT ═══ */
+@media(min-width:900px){
+  body,html{overflow:hidden;}
+  .scroll-area{display:flex;flex-direction:row;overflow:hidden;height:100%;}
+  .col-main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;border-right:1px solid var(--bdr);}
+  .col-side{width:280px;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;}
+  .bottom-bar{position:sticky;bottom:0;}
+}
+/* Small phone — shrink fonts */
+@media(max-width:380px){
+  .rec-timer{font-size:24px;}
+  .fin-btn{font-size:13px;padding:12px;}
+  .qbtn,.dlbtn{font-size:10px;}
+}
+/* Landscape phone */
+@media(max-height:500px) and (orientation:landscape){
+  .rec-btn{width:44px;height:44px;}
+  .rec-timer{font-size:22px;}
+  .fin-btn{padding:11px;font-size:13px;}
+  .log-body{max-height:80px;}
+}
 </style>
 </head>
 <body>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modal-overlay">
-  <div class="modal">
-    <h3>⚠️ Microphone Permission Required</h3>
-    <p>This app needs microphone access to record and transcribe your meeting. Please click <strong>Allow</strong> when your browser asks for permission.<br><br>Works best in <strong>Chrome</strong> or <strong>Edge</strong>.</p>
-    <div class="modal-btns"><button class="modal-close" onclick="closeModal()">Got it</button></div>
+<!-- LOADING -->
+<div class="ov" id="ov">
+  <div class="ov-box">
+    <div class="spin"></div>
+    <div class="ov-title">Generating Minutes</div>
+    <div class="ov-sub" id="ov-sub">Claude AI is analysing your recording and structuring the minutes…</div>
+    <div class="ov-ai"><div class="ov-dot"></div>Powered by Claude AI</div>
   </div>
 </div>
 
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
 <div class="app">
 
-  <!-- BANNER -->
-  <div class="banner">
-    <div class="b-logo">
-      <img src="data:image/png;base64,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" alt="AL ANEES Logo" />
+  <!-- ─── HEADER ─── -->
+  <div class="hdr">
+    <div class="hdr-logo"><img id="main-logo" src="data:image/png;base64,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" alt="AL ANEES"/></div>
+    <div class="hdr-info">
+      <div class="hdr-name">AL ANEES</div>
+      <div class="hdr-sub">AI Meeting Recorder &amp; Minutes Generator</div>
     </div>
-    <div class="b-info">
-      <div class="b-title">AL ANEES</div>
-      <div class="b-sub">Meeting Recorder &amp; Minutes</div>
+    <div class="hdr-right">
+      <div class="ai-dot"></div>
+      <div class="ai-lbl">Claude AI</div>
+      <div class="status-pill" id="status-pill">Ready</div>
     </div>
-    <span class="b-pill" id="status-badge">Ready</span>
   </div>
 
-  <div class="layout">
+  <!-- ─── SCROLL AREA ─── -->
+  <div class="scroll-area" id="scroll-area">
+  <div class="col-main" id="col-main">
 
-    <!-- LEFT -->
-    <div class="left">
-
-      <!-- META -->
-      <div class="meta-panel">
-        <div class="mg2">
-          <div class="mf">
-            <div class="ml">Meeting Title</div>
-            <input class="mi" id="mtg-title" placeholder="e.g. Q2 Strategy Review" />
-          </div>
-          <div class="mf">
-            <div class="ml">Chair / Organizer</div>
-            <input class="mi" id="mtg-chair" placeholder="Full name" />
-          </div>
-        </div>
-        <div class="mg3">
-          <div class="mf">
-            <div class="ml">Date</div>
-            <input class="mi" id="mtg-date" readonly placeholder="Auto-filled on record" />
-          </div>
-          <div class="mf">
-            <div class="ml">Start Time</div>
-            <input class="mi" id="mtg-start" readonly placeholder="Auto-filled on record" />
-          </div>
-          <div class="mf">
-            <div class="ml">Room / Location</div>
-            <input class="mi" id="mtg-loc" placeholder="Room / Platform" />
-          </div>
-        </div>
+    <!-- META -->
+    <div class="card">
+      <div class="grid2">
+        <div class="field"><div class="lbl">Meeting Title</div><input class="inp" id="mtg-title" placeholder="e.g. Q2 Strategy Review"/></div>
+        <div class="field"><div class="lbl">Your Name / Organizer</div><input class="inp" id="mtg-chair" placeholder="Full name"/></div>
       </div>
+      <div class="grid3">
+        <div class="field"><div class="lbl">Date</div><input class="inp" id="mtg-date" readonly placeholder="Auto-filled"/></div>
+        <div class="field"><div class="lbl">Start Time</div><input class="inp" id="mtg-start" readonly placeholder="Auto-filled"/></div>
+        <div class="field"><div class="lbl">Room / Location</div>
+<select class="inp" id="mtg-loc-sel" onchange="handleRoomChange(this)" style="cursor:pointer;">
+  <option value="">Select room…</option>
+  <option value="BIG MEETING ROOM">🏢 Big Meeting Room</option>
+  <option value="SMALL MEETING ROOM">🚪 Small Meeting Room</option>
+  <option value="__other__">✏️ Other (type below)</option>
+</select>
+<input class="inp" id="mtg-loc" placeholder="Type location…" style="display:none;margin-top:5px;"/></div>
+      </div>
+    </div>
 
-      <!-- REC BAR -->
-      <div class="rec-bar">
-        <button class="rec-btn rb-idle" id="rec-btn" onclick="toggleRecord()" title="Start / Stop recording">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>
+    <!-- RECORDER -->
+    <div class="rec-card">
+      <div class="rec-top">
+        <button class="rec-btn rb-idle" id="rec-btn" onclick="toggleRec()">
+          <div class="rbi"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg></div>
         </button>
-        <div class="rec-info">
-          <div class="rec-label" id="rec-label">Press to start recording</div>
+        <div class="rec-meta">
+          <div class="rec-lbl" id="rec-lbl">Tap to start recording</div>
           <div class="rec-timer" id="rec-timer">00:00</div>
           <div class="wave" id="wave"></div>
         </div>
-        <div class="ctl">
-          <button class="ib" id="pause-btn" onclick="togglePause()" disabled>
-            <svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-            <span id="pause-lbl">Pause</span>
-          </button>
-          <button class="ib ib-danger" id="stop-btn" onclick="stopRecording()" disabled>
-            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-            Stop
-          </button>
-          <button class="ib" onclick="clearAll()" style="margin-left:2px;">
-            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
-            Clear
-          </button>
-        </div>
       </div>
-
-      <!-- LANG BAR -->
-      <div class="lang-bar">
-        <span class="lb-label">Base Language:</span>
-        <span class="lang-chip active" data-lang="en-US" onclick="setLang(this)">EN</span>
-        <span class="lang-chip" data-lang="ar-SA" onclick="setLang(this)">AR</span>
-        <span class="lang-chip" data-lang="fr-FR" onclick="setLang(this)">FR</span>
-        <span class="lang-chip" data-lang="de-DE" onclick="setLang(this)">DE</span>
-        <span class="lang-chip" data-lang="es-ES" onclick="setLang(this)">ES</span>
-        <span class="lang-chip" data-lang="hi-IN" onclick="setLang(this)">HI</span>
-        <span class="lang-chip" data-lang="ur-PK" onclick="setLang(this)">UR</span>
-        <span class="lang-chip" data-lang="tr-TR" onclick="setLang(this)">TR</span>
-        <span class="detected-pill" id="detected-pill" style="display:none;"></span>
-      </div>
-
-      <!-- TRANSCRIPT -->
-      <div class="tx-panel">
-        <div class="tx-head">
-          <div class="tx-icon">
-            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-          </div>
-          <span class="tx-title">Live Transcript</span>
-          <span class="edit-hint">✏️ Click any segment to edit</span>
-          <span class="tx-count" id="word-count">0 words</span>
-        </div>
-        <div class="tx-body" id="tx-body">
-          <div class="empty" id="empty-state">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
-              <path d="M19 10v2a7 7 0 01-14 0v-2"/>
-              <line x1="12" y1="19" x2="12" y2="23"/>
-              <line x1="8" y1="23" x2="16" y2="23"/>
-            </svg>
-            <span>Transcript will appear here as you speak</span>
-          </div>
-          <div class="interim" id="interim-display" style="display:none;"></div>
-        </div>
-      </div>
-
-      <!-- FILE ATTACHMENTS -->
-      <div class="files-panel">
-        <div class="fp-head">
-          <div class="fp-icon">
-            <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
-          </div>
-          <span class="fp-title">Attachments</span>
-          <span class="fc" id="file-count">No files attached</span>
-        </div>
-        <div class="drop-zone" id="drop-zone"
-          onclick="document.getElementById('file-input').click()"
-          ondragover="handleDragOver(event)"
-          ondragleave="handleDragLeave(event)"
-          ondrop="handleDrop(event)">
-          📎 Drop files here or click to browse — attach agenda, reports, or supporting docs
-        </div>
-        <input type="file" id="file-input" multiple style="display:none;" onchange="handleFiles(this.files)" />
-        <div class="file-list" id="file-list"></div>
-      </div>
-
-    </div><!-- /left -->
-
-    <!-- RIGHT -->
-    <div class="right">
-
-      <div class="rp-sec">
-        <div class="rp-t">Session Stats</div>
-        <div class="stat-g">
-          <div class="sc"><div class="sv" id="s-words">0</div><div class="sl">Words</div></div>
-          <div class="sc"><div class="sv" id="s-time">0m</div><div class="sl">Duration</div></div>
-          <div class="sc"><div class="sv" id="s-segs">0</div><div class="sl">Segments</div></div>
-          <div class="sc"><div class="sv" id="s-langs">1</div><div class="sl">Languages</div></div>
-        </div>
-      </div>
-
-      <div class="dl-section">
-        <div class="rp-t">Download Transcript</div>
-        <button class="dl-btn" id="dl-txt" onclick="downloadTxt()" disabled>
-          <svg viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 12l-4 4-4-4M12 4v12"/></svg>
-          Download .txt
+      <div class="rec-btns">
+        <button class="btn" id="pause-btn" onclick="togglePause()" disabled>
+          <svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          <span id="pause-lbl">Pause</span>
         </button>
-        <button class="dl-btn" id="dl-csv" onclick="downloadCsv()" disabled>
-          <svg viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 12l-4 4-4-4M12 4v12"/></svg>
-          Download .csv
+        <button class="btn btn-stop" id="stop-btn" onclick="stopRec()" disabled>
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+          Stop
         </button>
-        <button class="dl-btn" id="dl-html" onclick="downloadHtml()" disabled>
-          <svg viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 12l-4 4-4-4M12 4v12"/></svg>
-          Download Full Report
+        <button class="btn" onclick="clearAll()" style="margin-left:auto;">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          Clear
         </button>
       </div>
+    </div>
 
-      <div class="ai-section">
-        <div class="rp-t">AI Actions</div>
-        <button class="ai-btn" id="gen-btn" onclick="openAI('minutes')" disabled>
-          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-          Generate Minutes
-        </button>
-        <button class="ai-btn" id="act-btn" onclick="openAI('actions')" disabled>
-          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-          Extract Action Items
-        </button>
-        <button class="ai-btn" id="sum-btn" onclick="openAI('summary')" disabled>
-          <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-          Summarize Meeting
-        </button>
-        <button class="ai-btn" id="eml-btn" onclick="openAI('email')" disabled>
-          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          Draft Follow-up Email
-        </button>
-        <div class="notice">
-          🎤 Uses Chrome / Edge built-in speech recognition. Auto multilingual detection enabled. Allow microphone when prompted.
-        </div>
+    <!-- AI BAR -->
+    <div class="ai-bar">
+      <div class="ai-bar-dot"></div>
+      <div class="ai-bar-txt">Claude AI — Listening &nbsp;·&nbsp; No duplicates &nbsp;·&nbsp; High accuracy</div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="sc"><div class="sv" id="s-words">0</div><div class="sl">Words</div></div>
+      <div class="sc"><div class="sv" id="s-time">0m</div><div class="sl">Duration</div></div>
+      <div class="sc"><div class="sv" id="s-segs">0</div><div class="sl">Segments</div></div>
+    </div>
+
+    <!-- LOG -->
+    <div class="log-card">
+      <div class="log-head">
+        <div class="log-ico"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
+        <span class="log-title">Recording Log</span>
+        <span class="log-note" id="log-note">0 segments</span>
       </div>
+      <div class="log-body" id="log-body">
+        <div class="log-empty" id="log-empty">Recording log appears here — no live transcript shown</div>
+      </div>
+    </div>
 
-    </div><!-- /right -->
-  </div><!-- /layout -->
+    <!-- FINALIZE EMPTY -->
+    <div class="fin-empty" id="fin-empty">
+      <svg viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h3M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/></svg>
+      <h3>Minutes appear here</h3>
+      <p>Record your meeting, then tap <strong>Finalize &amp; Generate Minutes</strong>. Claude AI will structure everything into a professional, fully editable document.</p>
+    </div>
+
+    <!-- MINUTES DOCUMENT -->
+    <div id="min-wrap" style="display:none;">
+      <div class="doc-toolbar">
+        <span class="dt-lbl">📄 Meeting Minutes — Editable</span>
+        <button class="tbtn" onclick="dlTxt()"><svg viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 12l-4 4-4-4M12 4v12"/></svg>.txt</button>
+        <button class="tbtn" onclick="dlHtml()"><svg viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 12l-4 4-4-4M12 4v12"/></svg>Report</button>
+        <button class="tbtn pri" onclick="finalize()"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Re-gen</button>
+      </div>
+      <div class="min-doc-wrap" id="min-doc"></div>
+    </div>
+
+    <!-- ATTACHMENTS -->
+    <div class="files-card">
+      <div class="files-head">
+        <div class="files-ico"><svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg></div>
+        <span class="files-title">Attachments</span>
+        <span class="files-count" id="f-count">No files</span>
+      </div>
+      <div class="dz" id="dz" onclick="document.getElementById('fi').click()" ondragover="dzO(event)" ondragleave="dzL()" ondrop="dzD(event)">
+        📎 Tap to attach files — agenda, reports, or supporting docs
+      </div>
+      <input type="file" id="fi" multiple style="display:none;" onchange="addFiles(this.files)"/>
+      <div class="f-list" id="f-list"></div>
+    </div>
+
+    <div style="height:10px;background:var(--bg);"></div>
+
+  </div><!-- /col-main -->
+  </div><!-- /scroll-area -->
+
+  <!-- ─── BOTTOM BAR ─── -->
+  <div class="bottom-bar">
+    <button class="fin-btn" id="fin-btn" onclick="finalize()" disabled>
+      <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c2.12 0 4.07.74 5.61 1.96"/></svg>
+      Finalize &amp; Generate Minutes
+    </button>
+    <div class="quick-row">
+      <button class="qbtn" id="q-sum" onclick="quickAI('summary')" disabled>
+        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/></svg>
+        Summarise
+      </button>
+      <button class="qbtn" id="q-act" onclick="quickAI('actions')" disabled>
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        Action Items
+      </button>
+      <button class="qbtn" id="q-eml" onclick="quickAI('email')" disabled>
+        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Follow-up Email
+      </button>
+    </div>
+    <div class="dl-row">
+      <button class="dlbtn" id="dl-rtxt" onclick="dlRawTxt()" disabled>
+        <svg viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 12l-4 4-4-4M12 4v12"/></svg>
+        Transcript .txt
+      </button>
+      <button class="dlbtn" id="dl-rcsv" onclick="dlRawCsv()" disabled>
+        <svg viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 12l-4 4-4-4M12 4v12"/></svg>
+        Transcript .csv
+      </button>
+    </div>
+  </div>
+
 </div><!-- /app -->
 
-<div class="footer">AL ANEES Meeting Recorder &nbsp;·&nbsp; Works best in Chrome or Edge &nbsp;·&nbsp; All data stays on your device</div>
-
 <script>
-var recognition=null,isRec=false,isPaused=false,timerInt=null,waveInt=null;
-var seconds=0,segments=[],wordTotal=0,detectedLangs={},attachedFiles=[];
-var currentLang='en-US';
-var BARS=30,bars=[];
+/* ══════════════════════════════
+   STATE
+══════════════════════════════ */
+var recog = null, isRec = false, isPaused = false;
+var tmrInt = null, waveInt = null, langSwInt = null;
+var secs = 0, segs = [], detLangs = {}, attFiles = [];
+var actIdx = 0, attIdx = 0;
+var BARS = 30, bars = [];
 
-// Build waveform bars
-var waveEl=document.getElementById('wave');
-for(var i=0;i<BARS;i++){var b=document.createElement('div');b.className='wb';b.style.height='3px';waveEl.appendChild(b);bars.push(b);}
+/* Languages to cycle through — Malayalam, Tamil, English primary */
+var LANGS = ['ml-IN','ta-IN','en-IN','en-US','en-GB','hi-IN'];
+var langIdx = 0;
 
-/* ── HELPERS ── */
-function pad(n){return n<10?'0'+n:''+n;}
-function fmt(s){return pad(Math.floor(s/60))+':'+pad(s%60);}
-function nowTime(){var n=new Date();return pad(n.getHours())+':'+pad(n.getMinutes());}
-function nowDate(){return new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});}
-function nowStamp(){var n=new Date();return n.getFullYear()+'-'+pad(n.getMonth()+1)+'-'+pad(n.getDate())+'_'+pad(n.getHours())+pad(n.getMinutes());}
-function esc(t){return(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+/* Build wave */
+(function(){
+  var w = document.getElementById('wave');
+  for(var i = 0; i < BARS; i++){
+    var b = document.createElement('div');
+    b.className = 'wb'; b.style.height = '3px';
+    w.appendChild(b); bars.push(b);
+  }
+})();
 
-/* ── LANGUAGE ── */
-function setLang(el){
-  document.querySelectorAll('.lang-chip').forEach(function(c){c.classList.remove('active');});
-  el.classList.add('active');currentLang=el.dataset.lang;
-  if(recognition&&isRec&&!isPaused){recognition.lang=currentLang;}
+/* ═══ UTILS ═══ */
+function pad(n){ return n < 10 ? '0'+n : ''+n; }
+function fmt(s){ return pad(Math.floor(s/60)) + ':' + pad(s%60); }
+function nowTime(){ var n=new Date(); return pad(n.getHours())+':'+pad(n.getMinutes()); }
+function nowDate(){ return new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}); }
+function stamp(){ var n=new Date(); return n.getFullYear()+'-'+pad(n.getMonth()+1)+'-'+pad(n.getDate())+'_'+pad(n.getHours())+pad(n.getMinutes()); }
+function esc(t){ return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg, dur){
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('on');
+  setTimeout(function(){ t.classList.remove('on'); }, dur||2800);
 }
-function detectLangFromText(t){
-  if(/[\u0600-\u06FF]/.test(t))return'AR';
-  if(/[àâæçèéêëîïôùûüÿœ]/i.test(t))return'FR';
-  if(/[äöüß]/i.test(t))return'DE';
-  if(/[\u0900-\u097F]/.test(t))return'HI';
-  if(/[\u0600-\u06FF\u0750-\u077F]/.test(t))return'UR';
-  return null;
+function loading(on, sub){
+  document.getElementById('ov').classList[on?'add':'remove']('on');
+  if(sub) document.getElementById('ov-sub').textContent = sub;
 }
-function updateDetectedLangs(){
-  var keys=Object.keys(detectedLangs);
-  var pill=document.getElementById('detected-pill');
-  if(keys.length>0){pill.style.display='';pill.textContent='Detected: '+keys.join(', ');}
-  else{pill.style.display='none';}
-  document.getElementById('s-langs').textContent=keys.length>0?keys.length+1:1;
-}
-
-/* ── STATS ── */
-function updateStats(){
-  var wc=0;
-  segments.forEach(function(s){wc+=(s.text||'').split(/\s+/).filter(Boolean).length;});
-  wordTotal=wc;
-  document.getElementById('word-count').textContent=wordTotal+' word'+(wordTotal!==1?'s':'');
-  document.getElementById('s-words').textContent=wordTotal;
-  document.getElementById('s-time').textContent=Math.round(seconds/60)+'m';
-  document.getElementById('s-segs').textContent=segments.length;
+function dlBlob(blob, name){
+  var u = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = u; a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(u); }, 800);
 }
 function enableAI(on){
-  ['gen-btn','act-btn','sum-btn','eml-btn','dl-txt','dl-csv','dl-html'].forEach(function(id){
-    document.getElementById(id).disabled=!on;
+  ['fin-btn','q-sum','q-act','q-eml','dl-rtxt','dl-rcsv'].forEach(function(id){
+    document.getElementById(id).disabled = !on;
   });
 }
 
-/* ── WAVEFORM ── */
-function animateWave(on){
+/* ═══ LANGUAGE DETECTION FROM TEXT ═══ */
+function detectLang(t){
+  /* Malayalam Unicode block */
+  if(/[\u0D00-\u0D7F]/.test(t)) return 'ML';
+  /* Tamil Unicode block */
+  if(/[\u0B80-\u0BFF]/.test(t)) return 'TA';
+  /* Devanagari (Hindi) */
+  if(/[\u0900-\u097F]/.test(t)) return 'HI';
+  /* Arabic */
+  if(/[\u0600-\u06FF]/.test(t)) return 'AR';
+  return 'EN';
+}
+
+/* ═══ STATS ═══ */
+function refreshStats(){
+  var wc = segs.reduce(function(a,s){ return a+(s.text||'').split(/\s+/).filter(Boolean).length; }, 0);
+  document.getElementById('s-words').textContent = wc;
+  document.getElementById('s-time').textContent = Math.round(secs/60)+'m';
+  document.getElementById('s-segs').textContent = segs.length;
+}
+
+/* ═══ WAVE ═══ */
+function wave(on){
   clearInterval(waveInt);
-  if(!on){bars.forEach(function(b){b.style.height='3px';b.className='wb';});return;}
-  waveInt=setInterval(function(){
-    bars.forEach(function(b){
-      var h=Math.random()*20+3;
-      b.style.height=h+'px';
-      b.className='wb wb-on';
-    });
-  },110);
+  if(!on){ bars.forEach(function(b){ b.style.height='3px'; b.className='wb'; }); return; }
+  waveInt = setInterval(function(){
+    bars.forEach(function(b){ b.style.height=(Math.random()*22+3)+'px'; b.className='wb wb-on'; });
+  }, 90);
 }
 
-/* ── SEGMENT ── */
-function addSegment(text){
-  var empty=document.getElementById('empty-state');
-  if(empty)empty.remove();
-  var ts=fmt(seconds);
-  var detected=detectLangFromText(text);
-  var langTag=detected||(currentLang.split('-')[0].toUpperCase());
-  if(detected)detectedLangs[detected]=true;
-  updateDetectedLangs();
-  var id='seg-'+Date.now()+'-'+Math.random().toString(36).slice(2,6);
-  segments.push({id:id,ts:ts,text:text.trim(),lang:langTag});
-  var div=document.createElement('div');
-  div.className='seg';div.id=id;
-  div.innerHTML=
-    '<div class="seg-ts">'+ts+'</div>'+
-    '<div class="seg-lang">'+langTag+'</div>'+
-    '<div class="seg-text new-seg" contenteditable="true" spellcheck="true" '+
-      'onblur="syncSeg(\''+id+'\',this)" oninput="updateStats()">'+esc(text.trim())+'</div>'+
-    '<button class="seg-del" onclick="delSeg(\''+id+'\')" title="Delete segment">×</button>';
-  var body=document.getElementById('tx-body');
-  var interim=document.getElementById('interim-display');
-  body.insertBefore(div,interim);
-  body.scrollTop=body.scrollHeight;
-  setTimeout(function(){
-    var el=document.querySelector('#'+id+' .seg-text');
-    if(el)el.classList.remove('new-seg');
-  },2500);
-  updateStats();enableAI(true);
-}
-function syncSeg(id,el){
-  var seg=segments.find(function(s){return s.id===id;});
-  if(seg)seg.text=(el.innerText||el.textContent||'').trim();
-  updateStats();
-}
-function delSeg(id){
-  segments=segments.filter(function(s){return s.id!==id;});
-  var el=document.getElementById(id);if(el)el.remove();
-  updateStats();
-  if(segments.length===0)enableAI(false);
+/* ═══ DEDUP + ADD SEGMENT ═══ */
+function norm(t){ return (t||'').toLowerCase().replace(/[\u0000-\u002F\u003A-\u0040\u005B-\u0060\u007B-\u007F]/g,'').replace(/\s+/g,' ').trim(); }
+function addSeg(text){
+  var n = norm(text);
+  if(!n || n.length < 3) return;
+  /* Check last 3 segments for duplicates / overlap */
+  for(var k = Math.max(0, segs.length-3); k < segs.length; k++){
+    var last = norm(segs[k].text);
+    if(last === n || last.includes(n) || n.includes(last)) return;
+    var tA = n.split(' '), tB = last.split(' ');
+    var shared = tA.filter(function(w){ return w.length > 2 && tB.indexOf(w) > -1; }).length;
+    if(shared / Math.max(tA.length, tB.length) > 0.72) return;
+  }
+  var lang = detectLang(text);
+  detLangs[lang] = true;
+  var ts = fmt(secs);
+  segs.push({ts:ts, text:text.trim(), lang:lang});
+  /* Remove empty state */
+  var empty = document.getElementById('log-empty');
+  if(empty) empty.remove();
+  /* Add to log */
+  var item = document.createElement('div');
+  item.className = 'log-item';
+  item.innerHTML = '<span class="log-ts">'+ts+'</span><span class="log-lang">'+lang+'</span>'+esc(text.trim());
+  var body = document.getElementById('log-body');
+  body.appendChild(item); body.scrollTop = body.scrollHeight;
+  document.getElementById('log-note').textContent = segs.length + ' segment' + (segs.length!==1?'s':'');
+  refreshStats(); enableAI(true);
 }
 
-/* ── SPEECH RECOGNITION ── */
-function setupRecognition(){
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+/* ═══ SPEECH RECOGNITION ═══ */
+function setupRecog(){
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if(!SR){
-    document.getElementById('modal-overlay').classList.add('open');
+    alert('Speech recognition requires Chrome or Edge browser.\n\nPlease open this page in Chrome or Edge on your phone/desktop and allow microphone access.');
     return false;
   }
-  recognition=new SR();
-  recognition.continuous=true;
-  recognition.interimResults=true;
-  recognition.lang=currentLang;
-  var interimEl=document.getElementById('interim-display');
-  recognition.onresult=function(e){
-    var interim='',final='';
-    for(var i=e.resultIndex;i<e.results.length;i++){
-      if(e.results[i].isFinal)final+=e.results[i][0].transcript+' ';
-      else interim+=e.results[i][0].transcript;
-    }
-    if(interim){interimEl.style.display='';interimEl.textContent='⏳ '+interim;}
-    if(final.trim()){interimEl.style.display='none';interimEl.textContent='';addSegment(final);}
-  };
-  recognition.onerror=function(e){
-    if(e.error==='not-allowed'||e.error==='denied'){
-      document.getElementById('modal-overlay').classList.add('open');
-    }
-    if(e.error!=='aborted'&&isRec&&!isPaused){
-      try{recognition.start();}catch(er){}
+  recog = new SR();
+  recog.continuous = true;
+  recog.interimResults = false;   /* FINAL ONLY — zero duplicates */
+  recog.maxAlternatives = 1;
+  recog.lang = LANGS[langIdx];
+
+  recog.onresult = function(e){
+    for(var i = e.resultIndex; i < e.results.length; i++){
+      if(e.results[i].isFinal){
+        addSeg(e.results[i][0].transcript);
+      }
     }
   };
-  recognition.onend=function(){
-    if(isRec&&!isPaused){try{recognition.start();}catch(er){}}
+
+  recog.onerror = function(e){
+    if(e.error === 'not-allowed' || e.error === 'denied'){
+      alert('Microphone access denied.\n\nPlease:\n1. Tap the lock icon in your browser address bar\n2. Allow microphone\n3. Refresh and try again');
+      return;
+    }
+    /* Auto-restart on any other error */
+    if(e.error !== 'aborted' && isRec && !isPaused){
+      try{ recog.start(); }catch(er){}
+    }
   };
+
+  recog.onend = function(){
+    if(isRec && !isPaused){
+      try{ recog.start(); }catch(er){}
+    }
+  };
+
   return true;
 }
 
-function toggleRecord(){
+/* Switch language every 6s for multi-language coverage */
+function startLangCycle(){
+  clearInterval(langSwInt);
+  langSwInt = setInterval(function(){
+    if(!isRec || isPaused) return;
+    langIdx = (langIdx + 1) % LANGS.length;
+    if(recog) try{ recog.lang = LANGS[langIdx]; }catch(e){}
+  }, 6000);
+}
+
+/* ═══ REC BUTTON STATE ═══ */
+function setRecBtn(s){
+  var btn = document.getElementById('rec-btn');
+  btn.className = 'rec-btn rb-' + s;
+  var icons = {
+    idle: '<circle cx="12" cy="12" r="8"/>',
+    rec:  '<rect x="5" y="5" width="14" height="14" rx="2"/>',
+    pau:  '<polygon points="5,3 19,12 5,21"/>'
+  };
+  btn.querySelector('.rbi').innerHTML = '<svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:currentColor;"><'+icons[s]+'/></svg>';
+}
+
+/* ═══ RECORD / PAUSE / STOP / CLEAR ═══ */
+function toggleRec(){
   if(!isRec){
-    if(!setupRecognition())return;
-    // Auto-fill date & time
-    document.getElementById('mtg-date').value=nowDate();
-    document.getElementById('mtg-start').value=nowTime();
-    isRec=true;isPaused=false;seconds=0;
-    document.getElementById('rec-timer').textContent='00:00';
-    timerInt=setInterval(function(){
-      seconds++;
-      document.getElementById('rec-timer').textContent=fmt(seconds);
-      updateStats();
-    },1000);
-    recognition.start();
-    animateWave(true);
-    var btn=document.getElementById('rec-btn');
-    btn.className='rec-btn rb-rec';
-    btn.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>';
-    document.getElementById('pause-btn').disabled=false;
-    document.getElementById('stop-btn').disabled=false;
-    document.getElementById('status-badge').textContent='● Recording';
-    document.getElementById('rec-label').textContent='Recording in progress — speak clearly';
+    if(!setupRecog()) return;
+    /* Auto-fill date & time */
+    document.getElementById('mtg-date').value = nowDate();
+    document.getElementById('mtg-start').value = nowTime();
+    isRec = true; isPaused = false; secs = 0;
+    document.getElementById('rec-timer').textContent = '00:00';
+    tmrInt = setInterval(function(){ secs++; document.getElementById('rec-timer').textContent = fmt(secs); refreshStats(); }, 1000);
+    recog.start();
+    wave(true);
+    startLangCycle();
+    setRecBtn('rec');
+    document.getElementById('pause-btn').disabled = false;
+    document.getElementById('stop-btn').disabled = false;
+    document.getElementById('status-pill').textContent = '● Recording';
+    document.getElementById('rec-lbl').textContent = 'Recording — speak clearly in any language';
   } else {
-    stopRecording();
+    stopRec();
   }
 }
 
 function togglePause(){
-  if(!isRec)return;
+  if(!isRec) return;
   if(!isPaused){
-    isPaused=true;
-    clearInterval(timerInt);
-    recognition.stop();
-    animateWave(false);
-    var btn=document.getElementById('rec-btn');
-    btn.className='rec-btn rb-pau';
-    btn.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;"><polygon points="5,3 19,12 5,21"/></svg>';
-    document.getElementById('pause-lbl').textContent='Resume';
-    document.getElementById('status-badge').textContent='Paused';
-    document.getElementById('rec-label').textContent='Recording paused — click Resume to continue';
+    isPaused = true;
+    clearInterval(tmrInt); clearInterval(langSwInt);
+    recog.stop(); wave(false);
+    setRecBtn('pau');
+    document.getElementById('pause-lbl').textContent = 'Resume';
+    document.getElementById('status-pill').textContent = 'Paused';
+    document.getElementById('rec-lbl').textContent = 'Paused — tap Resume to continue';
   } else {
-    isPaused=false;
-    timerInt=setInterval(function(){seconds++;document.getElementById('rec-timer').textContent=fmt(seconds);updateStats();},1000);
-    recognition.lang=currentLang;
-    recognition.start();
-    animateWave(true);
-    var btn=document.getElementById('rec-btn');
-    btn.className='rec-btn rb-rec';
-    btn.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>';
-    document.getElementById('pause-lbl').textContent='Pause';
-    document.getElementById('status-badge').textContent='● Recording';
-    document.getElementById('rec-label').textContent='Recording in progress — speak clearly';
+    isPaused = false;
+    tmrInt = setInterval(function(){ secs++; document.getElementById('rec-timer').textContent = fmt(secs); refreshStats(); }, 1000);
+    recog.lang = LANGS[langIdx];
+    recog.start(); wave(true);
+    startLangCycle();
+    setRecBtn('rec');
+    document.getElementById('pause-lbl').textContent = 'Pause';
+    document.getElementById('status-pill').textContent = '● Recording';
+    document.getElementById('rec-lbl').textContent = 'Recording — speak clearly in any language';
   }
 }
 
-function stopRecording(){
-  if(!isRec)return;
-  isRec=false;isPaused=false;
-  clearInterval(timerInt);
-  animateWave(false);
-  if(recognition)recognition.stop();
-  document.getElementById('interim-display').style.display='none';
-  var btn=document.getElementById('rec-btn');
-  btn.className='rec-btn rb-idle';
-  btn.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;"><circle cx="12" cy="12" r="8"/></svg>';
-  document.getElementById('pause-btn').disabled=true;
-  document.getElementById('stop-btn').disabled=true;
-  document.getElementById('pause-lbl').textContent='Pause';
-  document.getElementById('status-badge').textContent='Done';
-  document.getElementById('rec-label').textContent='Recording complete — edit transcript or use AI actions';
-  updateStats();
-  if(segments.length>0)enableAI(true);
+function stopRec(){
+  if(!isRec) return;
+  isRec = false; isPaused = false;
+  clearInterval(tmrInt); clearInterval(langSwInt);
+  wave(false);
+  if(recog) recog.stop();
+  setRecBtn('idle');
+  document.getElementById('pause-btn').disabled = true;
+  document.getElementById('stop-btn').disabled = true;
+  document.getElementById('pause-lbl').textContent = 'Pause';
+  document.getElementById('status-pill').textContent = 'Done';
+  document.getElementById('rec-lbl').textContent = 'Recording complete — tap Finalize to generate';
+  refreshStats();
+  if(segs.length) enableAI(true);
 }
 
 function clearAll(){
-  stopRecording();
-  segments=[];wordTotal=0;seconds=0;detectedLangs={};
-  document.getElementById('rec-timer').textContent='00:00';
-  document.getElementById('tx-body').innerHTML=
-    '<div class="empty" id="empty-state">'+
-    '<svg viewBox="0 0 24 24" style="width:30px;height:30px;stroke:var(--text3);fill:none;stroke-width:1.5;">'+
-    '<path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>'+
-    '<path d="M19 10v2a7 7 0 01-14 0v-2"/>'+
-    '<line x1="12" y1="19" x2="12" y2="23"/>'+
-    '<line x1="8" y1="23" x2="16" y2="23"/>'+
-    '</svg>'+
-    '<span>Transcript will appear here as you speak</span></div>'+
-    '<div class="interim" id="interim-display" style="display:none;"></div>';
-  document.getElementById('status-badge').textContent='Ready';
-  document.getElementById('rec-label').textContent='Press to start recording';
-  document.getElementById('mtg-date').value='';
-  document.getElementById('mtg-start').value='';
-  updateDetectedLangs();updateStats();enableAI(false);
+  stopRec();
+  segs = []; detLangs = {}; secs = 0; langIdx = 0; actIdx = 0; attIdx = 0;
+  document.getElementById('rec-timer').textContent = '00:00';
+  document.getElementById('log-body').innerHTML = '<div class="log-empty" id="log-empty">Recording log appears here — no live transcript shown</div>';
+  document.getElementById('log-note').textContent = '0 segments';
+  document.getElementById('mtg-date').value = '';
+  document.getElementById('mtg-start').value = '';
+  document.getElementById('status-pill').textContent = 'Ready';
+  document.getElementById('rec-lbl').textContent = 'Tap to start recording';
+  document.getElementById('fin-empty').style.display = '';
+  document.getElementById('min-wrap').style.display = 'none';
+  refreshStats(); enableAI(false);
 }
 
-/* ── META BLOCK ── */
-function buildMeta(){
+/* ═══ META ═══ */
+function getMeta(){
   return {
-    title: document.getElementById('mtg-title').value||'AL ANEES Meeting',
-    chair: document.getElementById('mtg-chair').value||'Not specified',
-    date:  document.getElementById('mtg-date').value||'Not recorded',
-    start: document.getElementById('mtg-start').value||'Not recorded',
-    room:  document.getElementById('mtg-loc').value||'Not specified',
-    dur:   fmt(seconds),
-    langs: ['EN (base)'].concat(Object.keys(detectedLangs)).join(', '),
-    files: attachedFiles.length>0?attachedFiles.map(function(f){return f.name;}).join(', '):'None'
+    title:  document.getElementById('mtg-title').value  || 'AL ANEES Meeting',
+    chair:  document.getElementById('mtg-chair').value  || 'Not specified',
+    date:   document.getElementById('mtg-date').value   || 'Not recorded',
+    start:  document.getElementById('mtg-start').value  || 'Not recorded',
+    room:   document.getElementById('mtg-loc').value    || 'Not specified',
+    dur:    fmt(secs)
   };
 }
+function getTx(){ return segs.map(function(s){ return '['+s.ts+']['+s.lang+'] '+s.text; }).join('\n'); }
 
-/* ── DOWNLOAD TXT ── */
-function downloadTxt(){
-  var m=buildMeta();
-  var lines=[
-    'AL ANEES — OFFICIAL MEETING TRANSCRIPT',
-    '========================================',
-    'Meeting Title  : '+m.title,
-    'Date           : '+m.date,
-    'Start Time     : '+m.start,
-    'Room / Location: '+m.room,
-    'Organizer      : '+m.chair,
-    'Duration       : '+m.dur,
-    'Languages      : '+m.langs,
-    'Attachments    : '+m.files,
-    '========================================','',
-    'TRANSCRIPT','----------',''
-  ];
-  segments.forEach(function(s){lines.push('['+s.ts+'] ['+s.lang+'] '+s.text);});
-  lines.push('','========================================','End of Transcript — AL ANEES');
-  var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});
-  triggerDownload(blob,'ALANEES_Transcript_'+nowStamp()+'.txt');
-}
+/* ═══ FINALIZE — Claude API ═══ */
+function finalize(){
+  if(!segs.length){ toast('Nothing recorded yet.'); return; }
+  loading(true, 'Claude AI is analysing your recording…');
+  document.getElementById('fin-empty').style.display = 'none';
+  document.getElementById('min-wrap').style.display = 'none';
 
-/* ── DOWNLOAD CSV ── */
-function downloadCsv(){
-  var m=buildMeta();
-  var rows=[
-    ['AL ANEES Meeting Transcript'],
-    ['Meeting Title',m.title],['Date',m.date],['Start Time',m.start],
-    ['Room/Location',m.room],['Organizer',m.chair],['Duration',m.dur],
-    ['Languages',m.langs],['Attachments',m.files],[],
-    ['Timestamp','Language','Text']
-  ];
-  segments.forEach(function(s){rows.push([s.ts,s.lang,'"'+s.text.replace(/"/g,'""')+'"']);});
-  var csv=rows.map(function(r){return r.join(',');}).join('\n');
-  var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
-  triggerDownload(blob,'ALANEES_Transcript_'+nowStamp()+'.csv');
-}
+  var meta = getMeta();
+  var tx = getTx();
+  var langs = Object.keys(detLangs).join(', ') || 'EN';
 
-/* ── DOWNLOAD HTML REPORT ── */
-function downloadHtml(){
-  var m=buildMeta();
-  var segRows=segments.map(function(s,i){
-    var bg=i%2===0?'#ffffff':'#f9f9f9';
-    return'<tr style="background:'+bg+';">'+
-      '<td style="padding:8px 14px;color:#666;font-size:12px;white-space:nowrap;font-family:monospace;">'+esc(s.ts)+'</td>'+
-      '<td style="padding:8px 14px;"><span style="background:#EEEDFE;color:#534AB7;font-size:10px;padding:2px 7px;border-radius:999px;font-weight:600;">'+esc(s.lang)+'</span></td>'+
-      '<td style="padding:8px 14px;font-size:13px;line-height:1.6;">'+esc(s.text)+'</td></tr>';
-  }).join('');
-  var fileRows=attachedFiles.length>0
-    ?'<ul style="margin:8px 0 0 20px;">'+attachedFiles.map(function(f){return'<li style="font-size:13px;margin-bottom:4px;color:#333;">'+esc(f.name)+'</li>';}).join('')+'</ul>'
-    :'<p style="font-size:13px;color:#888;margin:4px 0 0;">None</p>';
-  var html='<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">'+
-    '<title>AL ANEES — '+esc(m.title)+'</title>'+
-    '<style>body{font-family:"Segoe UI",Arial,sans-serif;max-width:900px;margin:40px auto;padding:0 24px;color:#1a1a1a;background:#f7f7f8;}'+
-    'table{width:100%;border-collapse:collapse;}th,td{text-align:left;}</style></head><body>'+
-    '<div style="background:linear-gradient(135deg,#1565C0 0%,#42A5F5 100%);padding:20px 24px;border-radius:12px;display:flex;align-items:center;gap:16px;margin-bottom:24px;">'+
-    '<div style="background:white;border-radius:9px;width:46px;height:46px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#1565C0;flex-shrink:0;">AA</div>'+
-    '<div><div style="font-size:18px;font-weight:700;color:white;letter-spacing:.01em;">AL ANEES</div>'+
-    '<div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px;">Official Meeting Transcript</div></div></div>'+
-    '<div style="background:white;border-radius:10px;border:1px solid #e0e0e0;overflow:hidden;margin-bottom:24px;">'+
-    '<table>'+
-    metaRow('Meeting Title',m.title,true)+metaRow('Date',m.date,false)+
-    metaRow('Start Time',m.start,true)+metaRow('Room / Location',m.room,false)+
-    metaRow('Organizer / Chair',m.chair,true)+metaRow('Duration',m.dur,false)+
-    metaRow('Languages Detected',m.langs,true)+metaRow('Attachments',m.files,false)+
-    '</table></div>'+
-    '<h3 style="font-size:15px;margin-bottom:10px;color:#333;font-weight:600;">📝 Transcript</h3>'+
-    '<div style="background:white;border-radius:10px;border:1px solid #e0e0e0;overflow:hidden;margin-bottom:24px;">'+
-    '<table><thead><tr style="background:#0F6E56;">'+
-    '<th style="padding:10px 14px;color:white;font-size:12px;font-weight:600;">Time</th>'+
-    '<th style="padding:10px 14px;color:white;font-size:12px;font-weight:600;">Lang</th>'+
-    '<th style="padding:10px 14px;color:white;font-size:12px;font-weight:600;">Speech</th>'+
-    '</tr></thead><tbody>'+segRows+'</tbody></table></div>'+
-    '<h3 style="font-size:15px;margin-bottom:8px;color:#333;font-weight:600;">📎 Attachments</h3>'+
-    '<div style="background:white;border-radius:10px;border:1px solid #e0e0e0;padding:14px 18px;margin-bottom:24px;">'+fileRows+'</div>'+
-    '<p style="font-size:11px;color:#aaa;text-align:center;margin-top:24px;">'+
-    'Generated by AL ANEES Meeting Recorder &nbsp;·&nbsp; '+new Date().toLocaleString()+'</p>'+
-    '</body></html>';
-  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
-  triggerDownload(blob,'ALANEES_Report_'+nowStamp()+'.html');
-}
-function metaRow(label,val,shade){
-  var bg=shade?'#f5f5f5':'#ffffff';
-  return'<tr style="background:'+bg+';"><td style="padding:9px 16px;font-size:11px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:.04em;width:180px;white-space:nowrap;">'+esc(label)+'</td>'+
-    '<td style="padding:9px 16px;font-size:13px;color:#222;">'+esc(val)+'</td></tr>';
-}
-function triggerDownload(blob,filename){
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');a.href=url;a.download=filename;
-  document.body.appendChild(a);a.click();
-  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},1000);
-}
+  var sys = 'You are a professional meeting minutes generator for AL ANEES company. The transcript may contain English, Malayalam, and Tamil speech — understand all three and extract meaning accordingly. Respond with ONLY a valid JSON object (no markdown fences, no extra text):\n{"title":"string","summary":"2-5 sentence executive summary in English","keyPoints":["concise point in English"],"decisions":["decision in English"],"actionItems":[{"task":"string","owner":"string or empty","due":"YYYY-MM-DD or empty","priority":"high|medium|low"}],"nextSteps":"string","attendees":["name if clearly mentioned"],"languageNote":"brief note about languages detected"}';
 
-/* ── FILE ATTACHMENTS ── */
-function handleFiles(files){
-  Array.from(files).forEach(function(f){
-    attachedFiles.push(f);
-    var ext=(f.name.split('.').pop()||'').toLowerCase();
-    var icon=ext==='pdf'?'📄':ext==='xlsx'||ext==='xls'||ext==='csv'?'📊':ext==='docx'||ext==='doc'?'📝':ext==='pptx'||ext==='ppt'?'📋':ext==='jpg'||ext==='jpeg'||ext==='png'?'🖼️':'📎';
-    var size=f.size>1048576?(f.size/1048576).toFixed(1)+' MB':(f.size/1024).toFixed(0)+' KB';
-    var item=document.createElement('div');item.className='file-item';
-    var safeName=f.name.replace(/'/g,"\\'");
-    item.innerHTML='<span class="fi-icon">'+icon+'</span>'+
-      '<span class="fi-name" title="'+esc(f.name)+'">'+esc(f.name)+'</span>'+
-      '<span class="fi-size">'+size+'</span>'+
-      '<button class="fi-del" onclick="removeFile(\''+safeName+'\',this)" title="Remove">×</button>';
-    document.getElementById('file-list').appendChild(item);
+  var userMsg = 'Meeting: '+meta.title+'\nDate: '+meta.date+'\nStart: '+meta.start+'\nChair: '+meta.chair+'\nRoom: '+meta.room+'\nDuration: '+meta.dur+'\nLanguages detected in recording: '+langs+'\n\nRAW TRANSCRIPT:\n'+tx+'\n\nGenerate structured meeting minutes JSON in English.';
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      system: sys,
+      messages: [{ role: 'user', content: userMsg }]
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    loading(false);
+    var raw = d && d.content && d.content[0] && d.content[0].text;
+    if(!raw){ renderDoc(localGen(meta, segs)); toast('Used local generation.'); return; }
+    try{
+      var clean = raw.replace(/```json|```/g,'').trim();
+      renderDoc(JSON.parse(clean));
+      document.getElementById('status-pill').textContent = '✓ Minutes';
+      toast('Minutes generated by Claude AI ✓');
+    } catch(e){
+      renderDoc(localGen(meta, segs));
+      toast('Rendered locally — check connection.');
+    }
+  })
+  .catch(function(){
+    loading(false);
+    renderDoc(localGen(meta, segs));
+    toast('Offline — generated locally.');
   });
-  var n=attachedFiles.length;
-  document.getElementById('file-count').textContent=n+' file'+(n!==1?'s':'')+' attached';
 }
-function removeFile(name,btn){
-  attachedFiles=attachedFiles.filter(function(f){return f.name!==name;});
-  btn.parentElement.remove();
-  var n=attachedFiles.length;
-  document.getElementById('file-count').textContent=n>0?n+' file'+(n!==1?'s':'')+' attached':'No files attached';
-}
-function handleDragOver(e){e.preventDefault();document.getElementById('drop-zone').classList.add('dragover');}
-function handleDragLeave(e){document.getElementById('drop-zone').classList.remove('dragover');}
-function handleDrop(e){e.preventDefault();document.getElementById('drop-zone').classList.remove('dragover');handleFiles(e.dataTransfer.files);}
 
-/* ── AI ACTIONS (opens a new tab with a prompt to copy) ── */
-function openAI(type){
-  var m=buildMeta();
-  var tx=segments.map(function(s){return'['+s.ts+']['+s.lang+'] '+s.text;}).join('\n');
-  var meta='AL ANEES Meeting\nTitle: '+m.title+'\nDate: '+m.date+'\nStart: '+m.start+'\nRoom: '+m.room+'\nOrganizer: '+m.chair+'\nDuration: '+m.dur+'\nAttachments: '+m.files;
-  var prompts={
-    minutes:'Generate complete professional AL ANEES meeting minutes from this recording transcript. Include all sections: attendees, agenda, discussion, decisions, action items with owners.\n\n'+meta+'\n\nTRANSCRIPT:\n'+tx,
-    actions:'Extract all action items with owner and due date from this AL ANEES meeting transcript.\n\nTRANSCRIPT:\n'+tx,
-    summary:'Write a concise executive summary of this AL ANEES meeting. Key topics, decisions, next steps.\n\n'+meta+'\n\nTRANSCRIPT:\n'+tx,
-    email:'Draft a professional follow-up email to attendees for this AL ANEES meeting.\n\n'+meta+'\n\nTRANSCRIPT:\n'+tx
+/* ═══ LOCAL FALLBACK ═══ */
+function localGen(meta, ss){
+  var text = ss.map(function(s){ return s.text; }).join(' ');
+  var sents = (text.match(/[^.!?]+[.!?]*/g) || [text]).filter(function(s){ return s.trim().length > 20; });
+  var kp = sents.slice(0,6).map(function(s){ return s.trim(); });
+  var akw = /(will|shall|need to|must|should|going to|action|follow.?up|complete|submit|send|prepare|review|update|schedule|confirm|arrange)/i;
+  var acts = ss.filter(function(s){ return akw.test(s.text); }).slice(0,8).map(function(s){ return {task:s.text.trim(),owner:'',due:'',priority:'medium'}; });
+  return {
+    title: meta.title,
+    summary: 'Meeting held on '+meta.date+' at '+meta.start+(meta.chair&&meta.chair!=='Not specified'?', chaired by '+meta.chair:'')+'. '+ss.length+' segments captured over '+meta.dur+'.',
+    keyPoints: kp.length ? kp : ['Review raw transcript for details.'],
+    decisions: [],
+    actionItems: acts,
+    nextSteps: 'Distribute minutes to all attendees and follow up on action items.',
+    attendees: [],
+    languageNote: 'Languages: ' + Object.keys(detLangs).join(', ')
   };
-  var prompt=prompts[type]||prompts.minutes;
-  // Copy to clipboard and alert user
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(prompt).then(function(){
-      alert('Prompt copied to clipboard!\n\nPaste it into Claude.ai or your preferred AI assistant to get your '+type+'.');
-    });
+}
+
+/* ═══ RENDER MINUTES ═══ */
+function renderDoc(d){
+  var meta = getMeta();
+  var logoSrc = document.getElementById('main-logo').src;
+  var doc = document.getElementById('min-doc');
+  doc.innerHTML = '';
+  actIdx = 0; attIdx = 0;
+
+  /* Header */
+  var hdr = mk('div','min-hdr');
+  hdr.innerHTML =
+    '<div class="min-co"><div class="min-co-logo"><img src="'+logoSrc+'" alt="AA"/></div>'+
+    '<div><div class="min-co-name">AL ANEES</div><div class="min-co-sub">Official Meeting Minutes · Claude AI</div></div></div>'+
+    '<input class="min-title-in" id="md-title" value="'+esc(d.title||meta.title)+'" placeholder="Meeting Title"/>'+
+    '<div class="min-mg">'+
+    mf('Date',meta.date,'md-date')+mf('Start',meta.start,'md-start')+
+    mf('Room',meta.room,'md-room')+mf('Organizer',meta.chair,'md-chair')+
+    mf('Duration',meta.dur,'md-dur')+mf('Status','Draft','md-status')+
+    '</div>'+
+    (d.languageNote?'<div style="margin-top:8px;font-size:10.5px;color:var(--tx3);">'+esc(d.languageNote)+'</div>':'');
+  doc.appendChild(hdr);
+
+  /* Attendees */
+  var attSec = mk('div','min-sec');
+  var attHd = mk('div','min-sec-hd');
+  attHd.innerHTML = ico('blu','<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>')+'<span class="min-sec-title">Attendees</span><button class="sec-add" id="att-add-btn">+ Add</button>';
+  attSec.appendChild(attHd);
+  var attGrid = mk('div','att-list'); attGrid.id = 'att-grid';
+  attSec.appendChild(attGrid);
+  doc.appendChild(attSec);
+  document.getElementById('att-add-btn').onclick = function(){ addAtt(attGrid); };
+  (d.attendees||[]).forEach(function(n){ addAtt(attGrid, n); });
+  if(!(d.attendees||[]).length){ addAtt(attGrid); addAtt(attGrid); }
+
+  /* Sections */
+  sec(doc,'grn','<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>','Executive Summary',null,'<textarea class="mta" id="md-sum" rows="4">'+esc(d.summary||'')+'</textarea>');
+  sec(doc,'grn','<svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/></svg>','Key Discussion Points',null,'<textarea class="mta" id="md-kp" rows="5">'+esc((d.keyPoints||[]).map(function(p,i){return(i+1)+'. '+p;}).join('\n'))+'</textarea>');
+  sec(doc,'pur','<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>','Decisions Made',null,'<textarea class="mta" id="md-dec" rows="3">'+esc((d.decisions||[]).map(function(p,i){return(i+1)+'. '+p;}).join('\n')||'No formal decisions recorded.')+'</textarea>');
+
+  /* Action Items */
+  var actSec = mk('div','min-sec');
+  var actHd = mk('div','min-sec-hd');
+  actHd.innerHTML = ico('amb','<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>')+'<span class="min-sec-title">Action Items</span><button class="sec-add" id="act-add-btn">+ Add</button>';
+  actSec.appendChild(actHd);
+  var actList = mk('div','act-list'); actList.id = 'act-list';
+  actSec.appendChild(actList);
+  doc.appendChild(actSec);
+  document.getElementById('act-add-btn').onclick = function(){ addAct(actList); };
+  (d.actionItems||[]).forEach(function(a){ addAct(actList, a); });
+  if(!(d.actionItems||[]).length){ addAct(actList); addAct(actList); }
+
+  sec(doc,'brd','<svg viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>','Next Steps / AOB',null,'<textarea class="mta" id="md-next" rows="3">'+esc(d.nextSteps||'')+'</textarea>');
+
+  /* Signatures */
+  sec(doc,'blu','<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>','Signatures &amp; Approval',null,
+    '<div class="sig-grid">'+
+    '<div><div class="sig-box"><input class="min-mv" placeholder="Chair name" style="margin-bottom:5px;"/><input class="min-mv" placeholder="Date signed"/></div><div class="sig-role">Meeting Chair</div></div>'+
+    '<div><div class="sig-box"><input class="min-mv" placeholder="Secretary name" style="margin-bottom:5px;"/><input class="min-mv" placeholder="Date signed"/></div><div class="sig-role">Minutes Recorder</div></div>'+
+    '</div>');
+
+  document.getElementById('min-wrap').style.display = 'block';
+  setTimeout(function(){ document.getElementById('min-doc').scrollIntoView({behavior:'smooth',block:'start'}); }, 200);
+}
+
+/* DOM helpers */
+function mk(tag, cls){ var e=document.createElement(tag); e.className=cls; return e; }
+function mf(label, val, id){ return '<div class="min-mf"><div class="min-ml">'+label+'</div><input class="min-mv" id="'+id+'" value="'+esc(val)+'"/></div>'; }
+function ico(cls, svg){ return '<div class="msico '+cls+'">'+svg+'</div>'; }
+function sec(doc, ic, sv, title, addFn, innerHtml){
+  var wrap = mk('div','min-sec');
+  var hd = mk('div','min-sec-hd');
+  hd.innerHTML = ico(ic,sv)+'<span class="min-sec-title">'+title+'</span>'+(addFn?'<button class="sec-add" onclick="('+addFn+')()">+ Add</button>':'');
+  wrap.appendChild(hd);
+  if(innerHtml){ var b=mk('div',''); b.innerHTML=innerHtml; wrap.appendChild(b); }
+  doc.appendChild(wrap);
+}
+
+var avP = [['#E1F5EE','#0F6E56'],['#EDE9FE','#5B21B6'],['#FEF3C7','#92400E'],['#EBF4FF','#1565C0'],['#FCEBEB','#DC2626'],['#E0F2FE','#0369A1']];
+function addAtt(grid, name, role){
+  var i = attIdx++;
+  var c = avP[i % avP.length];
+  var ini = name ? (function(){ var p=(name||'').trim().split(/\s+/); return (p.length>=2?p[0][0]+p[p.length-1][0]:p[0].slice(0,2)).toUpperCase(); }()) : '?';
+  var row = mk('div','att-row');
+  row.innerHTML = '<div class="att-av" id="av-'+i+'" style="background:'+c[0]+';color:'+c[1]+'">'+ini+'</div>'+
+    '<input class="att-in" placeholder="Full name" value="'+esc(name||'')+'" oninput="upAv(this,\'av-'+i+'\',\''+c[0]+'\',\''+c[1]+'\')"/>'+
+    '<input class="att-in att-role" placeholder="Role" value="'+esc(role||'')+'"/>'+
+    '<button class="att-del" onclick="this.parentElement.remove()">×</button>';
+  grid.appendChild(row);
+}
+function upAv(inp, id, bg, fg){
+  var av = document.getElementById(id); if(!av) return;
+  var v = inp.value.trim(); if(!v){ av.textContent='?'; return; }
+  var p = v.split(/\s+/);
+  av.textContent = (p.length>=2 ? p[0][0]+p[p.length-1][0] : v.slice(0,2)).toUpperCase();
+}
+
+var priC = { HIGH:'background:#FEF2F2;color:#DC2626;', MEDIUM:'background:#FEF3C7;color:#92400E;', LOW:'background:#E1F5EE;color:#0F6E56;' };
+function addAct(list, item){
+  item = item || {task:'',owner:'',due:'',priority:'medium'};
+  var i = actIdx++;
+  var pri = (item.priority||'medium').toUpperCase();
+  var row = mk('div','act-row'); row.id = 'ar-'+i;
+  row.innerHTML =
+    '<input type="checkbox" class="act-cb" onchange="this.closest(\'.act-row\').classList.toggle(\'done-row\',this.checked)"/>'+
+    '<div class="act-body">'+
+    '<input class="act-text" value="'+esc(item.task)+'" placeholder="Describe action item…"/>'+
+    '<div class="act-tags">'+
+    '<span class="tag-lbl tag-o">👤</span><input class="tag-in" placeholder="Owner" value="'+esc(item.owner||'')+'"/>'+
+    '<span class="tag-lbl tag-d">📅</span><input class="tag-in tag-in-d" type="date" value="'+esc(item.due||'')+'"/>'+
+    '<button class="pri-badge" style="'+priC[pri]+'" onclick="cyclePri(this)">'+pri+'</button>'+
+    '</div></div>'+
+    '<button class="act-del" onclick="document.getElementById(\'ar-'+i+'\').remove()">×</button>';
+  list.appendChild(row);
+}
+function cyclePri(btn){
+  var ps = ['HIGH','MEDIUM','LOW'];
+  var n = ps[(ps.indexOf(btn.textContent.trim())+1)%3];
+  btn.textContent = n;
+  var s = priC[n].split(';');
+  btn.style.background = s[0].split(':')[1];
+  btn.style.color = s[1].split(':')[1];
+}
+
+/* ═══ COLLECT MINUTES ═══ */
+function collect(){
+  var G = function(id){ var e=document.getElementById(id); return e?e.value:''; };
+  var acts = [];
+  document.querySelectorAll('.act-row').forEach(function(r){
+    var t=r.querySelector('.act-text'), o=r.querySelector('.tag-in'), d=r.querySelector('.tag-in-d'), p=r.querySelector('.pri-badge');
+    if(t&&t.value.trim()) acts.push({task:t.value.trim(),owner:o?o.value:'',due:d?d.value:'',priority:p?p.textContent.trim():'MEDIUM',done:r.classList.contains('done-row')});
+  });
+  var atts = [];
+  document.querySelectorAll('.att-row').forEach(function(r){ var n=r.querySelector('.att-in'); if(n&&n.value.trim()) atts.push(n.value.trim()); });
+  return {title:G('md-title'),date:G('md-date'),start:G('md-start'),room:G('md-room'),chair:G('md-chair'),dur:G('md-dur'),summary:G('md-sum'),kp:G('md-kp'),dec:G('md-dec'),next:G('md-next'),acts:acts,atts:atts};
+}
+
+/* ═══ DOWNLOAD MINUTES ═══ */
+function dlTxt(){
+  var m = collect();
+  var L = ['AL ANEES — OFFICIAL MEETING MINUTES','Powered by Claude AI · '+new Date().toLocaleString(),'='.repeat(46),'',
+    'Meeting Title  : '+m.title,'Date           : '+m.date,'Start Time     : '+m.start,
+    'Room / Location: '+m.room,'Organizer      : '+m.chair,'Duration       : '+m.dur,
+    'Attendees      : '+(m.atts.join(', ')||'—'),'='.repeat(46),'',
+    'EXECUTIVE SUMMARY','─'.repeat(20),m.summary,'',
+    'KEY DISCUSSION POINTS','─'.repeat(22),m.kp,'',
+    'DECISIONS MADE','─'.repeat(15),m.dec,'',
+    'ACTION ITEMS','─'.repeat(13)];
+  m.acts.forEach(function(a,i){
+    L.push((i+1)+'. ['+(a.done?'✓':'○')+'] '+a.task+(a.owner?' | Owner: '+a.owner:'')+(a.due?' | Due: '+a.due:'')+(a.priority?' | '+a.priority:''));
+  });
+  L.push('','NEXT STEPS / AOB','─'.repeat(17),m.next,'','='.repeat(46),'End of Minutes — AL ANEES');
+  dlBlob(new Blob([L.join('\n')],{type:'text/plain;charset=utf-8'}), 'ALANEES_Minutes_'+stamp()+'.txt');
+}
+function dlHtml(){
+  var m = collect();
+  var logoSrc = document.getElementById('main-logo').src;
+  var actRows = m.acts.map(function(a,i){
+    var bg = i%2?'#f9f9f9':'#fff';
+    var pC = {HIGH:'#DC2626',MEDIUM:'#92400E',LOW:'#0F6E56'};
+    var pB = {HIGH:'#FEF2F2',MEDIUM:'#FEF3C7',LOW:'#E1F5EE'};
+    return '<tr style="background:'+bg+'"><td style="padding:9px 12px;font-size:12.5px;">'+esc(a.task)+'</td>'+
+      '<td style="padding:9px 12px;font-size:12px;">'+esc(a.owner||'—')+'</td>'+
+      '<td style="padding:9px 12px;font-size:12px;">'+esc(a.due||'—')+'</td>'+
+      '<td style="padding:9px 12px;"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;background:'+(pB[a.priority]||'#eee')+';color:'+(pC[a.priority]||'#555')+';">'+esc(a.priority||'')+'</span></td>'+
+      '<td style="padding:9px 12px;font-size:12px;">'+(a.done?'✅':'⏳')+'</td></tr>';
+  }).join('');
+  var kpI = m.kp.split('\n').filter(Boolean).map(function(p){ return '<li style="margin-bottom:7px;font-size:13px;line-height:1.65;">'+esc(p)+'</li>'; }).join('');
+  var decI = m.dec.split('\n').filter(Boolean).map(function(p){ return '<li style="margin-bottom:7px;font-size:13px;line-height:1.65;">'+esc(p)+'</li>'; }).join('');
+  var attI = m.atts.map(function(a){ return '<span style="display:inline-block;background:#EBF4FF;color:#1565C0;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;margin:3px 4px 3px 0;">'+esc(a)+'</span>'; }).join('');
+  var html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>AL ANEES — '+esc(m.title)+'</title>'+
+    '<style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:860px;margin:0 auto;padding:20px 16px;background:#F2F4F7;color:#111827;}'+
+    '.card{background:#fff;border-radius:12px;border:1px solid #E2E6EA;margin-bottom:16px;overflow:hidden;}'+
+    'h2{font-size:14px;font-weight:700;color:#0F6E56;padding:12px 18px;border-bottom:1px solid #E2E6EA;margin:0;background:#F9FBFA;}'+
+    '.body{padding:14px 18px;}table{width:100%;border-collapse:collapse;}'+
+    'th{background:#0F6E56;color:#fff;padding:9px 12px;font-size:12px;text-align:left;font-weight:700;}'+
+    'td{border-bottom:1px solid #E2E6EA;}'+
+    '@media(max-width:600px){table{font-size:11px;}th,td{padding:7px 8px;}}</style></head><body>'+
+    '<div class="card"><div style="background:linear-gradient(135deg,#1565C0,#1E88E5);padding:16px 18px;display:flex;align-items:center;gap:12px;">'+
+    '<img src="'+logoSrc+'" style="width:40px;height:40px;border-radius:9px;object-fit:cover;border:2px solid rgba(255,255,255,.3);flex-shrink:0;"/>'+
+    '<div><div style="font-size:17px;font-weight:700;color:#fff;">AL ANEES</div>'+
+    '<div style="font-size:11px;color:rgba(255,255,255,.75);">Official Meeting Minutes · Powered by Claude AI</div></div></div>'+
+    '<div class="body"><table style="border:none;">'+
+    mRow('Meeting Title',m.title,true)+mRow('Date',m.date,false)+mRow('Start Time',m.start,true)+
+    mRow('Room',m.room,false)+mRow('Organizer',m.chair,true)+mRow('Duration',m.dur,false)+'</table>'+
+    (attI?'<div style="margin-top:12px;"><div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Attendees</div>'+attI+'</div>':'')+
+    '</div></div>'+
+    '<div class="card"><h2>📋 Executive Summary</h2><div class="body" style="font-size:13px;line-height:1.75;">'+esc(m.summary)+'</div></div>'+
+    '<div class="card"><h2>💬 Key Discussion Points</h2><div class="body"><ul style="padding-left:18px;margin:0;">'+kpI+'</ul></div></div>'+
+    (decI?'<div class="card"><h2>✅ Decisions Made</h2><div class="body"><ul style="padding-left:18px;margin:0;">'+decI+'</ul></div></div>':'')+
+    '<div class="card"><h2>🎯 Action Items</h2><div style="overflow-x:auto;"><table><thead><tr><th>Task</th><th>Owner</th><th>Due Date</th><th>Priority</th><th>Status</th></tr></thead><tbody>'+actRows+'</tbody></table></div></div>'+
+    (m.next?'<div class="card"><h2>➡️ Next Steps / AOB</h2><div class="body" style="font-size:13px;line-height:1.75;">'+esc(m.next)+'</div></div>':'')+
+    '<p style="font-size:11px;color:#9CA3AF;text-align:center;margin-top:20px;">Generated by AL ANEES Meeting Recorder · Collaborated with Claude AI by Anthropic · '+new Date().toLocaleString()+'</p>'+
+    '</body></html>';
+  dlBlob(new Blob([html],{type:'text/html;charset=utf-8'}), 'ALANEES_Minutes_'+stamp()+'.html');
+}
+function mRow(l,v,sh){ return '<tr style="background:'+(sh?'#F9FBFA':'#fff')+'"><td style="padding:7px 0;font-size:10px;color:#9CA3AF;font-weight:700;text-transform:uppercase;width:130px;">'+l+'</td><td style="padding:7px 14px;font-size:13px;">'+esc(v)+'</td></tr>'; }
+
+/* ═══ RAW DOWNLOADS ═══ */
+function dlRawTxt(){
+  var meta = getMeta();
+  var L = ['AL ANEES — RAW TRANSCRIPT','='.repeat(36),'Title: '+meta.title,'Date: '+meta.date,'Start: '+meta.start,'Room: '+meta.room,'Chair: '+meta.chair,'Duration: '+meta.dur,'='.repeat(36),''];
+  segs.forEach(function(s,i){ L.push((i+1)+'. ['+s.ts+']['+s.lang+'] '+s.text); });
+  dlBlob(new Blob([L.join('\n')],{type:'text/plain;charset=utf-8'}), 'ALANEES_Transcript_'+stamp()+'.txt');
+}
+function dlRawCsv(){
+  var meta = getMeta();
+  var rows = [['AL ANEES Raw Transcript'],['Title',meta.title],['Date',meta.date],['Start',meta.start],['Room',meta.room],['Chair',meta.chair],[],['#','Timestamp','Language','Text']];
+  segs.forEach(function(s,i){ rows.push([i+1,s.ts,s.lang,'"'+s.text.replace(/"/g,'""')+'"']); });
+  dlBlob(new Blob([rows.map(function(r){return r.join(',');}).join('\n')],{type:'text/csv;charset=utf-8'}), 'ALANEES_Transcript_'+stamp()+'.csv');
+}
+
+/* ═══ QUICK AI ACTIONS ═══ */
+function quickAI(type){
+  if(!segs.length){ toast('No recording available.'); return; }
+  var meta = getMeta(); var tx = getTx();
+  var prompts = {
+    summary: 'Write a concise executive summary (4-6 sentences in English) of this meeting transcript. The transcript may contain Malayalam, Tamil, and English — understand all and summarise in English.\n\nMeeting: '+meta.title+'\nDate: '+meta.date+'\nChair: '+meta.chair+'\n\nTRANSCRIPT:\n'+tx,
+    actions: 'Extract all action items from this meeting transcript (which may contain Malayalam, Tamil, English). For each item list: task description in English, who was assigned, and any due date mentioned.\n\nTRANSCRIPT:\n'+tx,
+    email: 'Draft a professional follow-up email in English to all attendees of this AL ANEES meeting, summarising decisions and listing action items with owners.\n\nMeeting: '+meta.title+'\nDate: '+meta.date+'\nChair: '+meta.chair+'\n\nTRANSCRIPT:\n'+tx
+  };
+  loading(true, 'Claude AI is processing your request…');
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:prompts[type]}] })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    loading(false);
+    var txt = d && d.content && d.content[0] && d.content[0].text;
+    if(txt){ dlBlob(new Blob([txt],{type:'text/plain;charset=utf-8'}), 'ALANEES_'+type+'_'+stamp()+'.txt'); toast('Downloaded! ✓'); }
+    else { toast('Could not get response from Claude.'); }
+  })
+  .catch(function(){ loading(false); toast('Network error — check connection.'); });
+}
+
+/* ═══ FILE ATTACHMENTS ═══ */
+function addFiles(fl){
+  Array.from(fl).forEach(function(f){
+    attFiles.push(f);
+    var ext = (f.name.split('.').pop()||'').toLowerCase();
+    var ic = {pdf:'📄',xlsx:'📊',xls:'📊',csv:'📊',docx:'📝',doc:'📝',pptx:'📋',ppt:'📋',jpg:'🖼️',jpeg:'🖼️',png:'🖼️',gif:'🖼️',mp3:'🎵',mp4:'🎬'}[ext]||'📎';
+    var sz = f.size>1048576 ? (f.size/1048576).toFixed(1)+' MB' : (f.size/1024).toFixed(0)+' KB';
+    var item = mk('div','f-item');
+    item.innerHTML = '<span class="f-ico">'+ic+'</span><span class="f-name" title="'+esc(f.name)+'">'+esc(f.name)+'</span><span class="f-sz">'+sz+'</span>'+
+      '<button class="f-del" onclick="this.parentElement.remove();updFc();">×</button>';
+    document.getElementById('f-list').appendChild(item);
+  });
+  updFc();
+}
+function updFc(){
+  var n = document.querySelectorAll('.f-item').length;
+  document.getElementById('f-count').textContent = n ? n+' file'+(n!==1?'s':'') : 'No files';
+}
+function dzO(e){ e.preventDefault(); document.getElementById('dz').classList.add('ov'); }
+function dzL(){ document.getElementById('dz').classList.remove('ov'); }
+function dzD(e){ e.preventDefault(); dzL(); addFiles(e.dataTransfer.files); }
+
+/* ═══ ROOM SELECT ═══ */
+function handleRoomChange(sel){
+  var inp = document.getElementById('mtg-loc');
+  if(sel.value === '__other__'){
+    inp.style.display = 'block';
+    inp.value = '';
+    inp.focus();
   } else {
-    var ta=document.createElement('textarea');ta.value=prompt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
-    alert('Prompt copied to clipboard!\n\nPaste it into Claude.ai or your preferred AI assistant to get your '+type+'.');
+    inp.style.display = 'none';
+    inp.value = sel.value;
   }
 }
 
-// Init
-updateStats();
+/* INIT */
+refreshStats();
 </script>
 </body>
 </html>
