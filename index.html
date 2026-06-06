@@ -1130,11 +1130,11 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
         </div>
       </div>
       <div class="rec-btns">
-        <button class="btn btn-ctrl" id="pause-btn" onclick="togglePause()" style="opacity:.35;pointer-events:none;">
+        <button class="btn btn-ctrl" id="pause-btn" onclick="togglePause()" ontouchend="event.preventDefault();togglePause()" style="opacity:.35;pointer-events:none;">
           <svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
           <span id="pause-lbl">Pause</span>
         </button>
-        <button class="btn btn-stop btn-ctrl" id="stop-btn" onclick="stopRec()" style="opacity:.35;pointer-events:none;">
+        <button class="btn btn-stop btn-ctrl" id="stop-btn" onclick="stopRec()" ontouchend="event.preventDefault();stopRec()" style="opacity:.35;pointer-events:none;">
           <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
           Stop
         </button>
@@ -1479,18 +1479,19 @@ function getSpeaker(){
 /* ════════════════════════════
    ADD SEGMENT
 ════════════════════════════ */
-/* ── Persistent mic: ask permission ONCE on load, no more popups ── */
+/* ── Persistent mic: one permission request, stays alive ── */
 var _micStream=null;
 function getMic(){
   if(_micStream)return Promise.resolve(_micStream);
   return navigator.mediaDevices.getUserMedia({audio:true,video:false})
     .then(function(s){_micStream=s;return s;});
 }
+/* Ask mic on page load so popup shows once at startup */
 window.addEventListener('load',function(){
-  setTimeout(function(){getMic().catch(function(){});},700);
+  setTimeout(function(){getMic().catch(function(){});},800);
 });
 
-/* ── Translation queue: Malayalam/Tamil/any speech -> English text ── */
+/* ── Real-time translation queue: any language -> English ── */
 var _tq=[],_tBusy=false;
 function enqueueTranslate(raw,spk,ts){
   _tq.push({raw:raw,spk:spk,ts:ts});
@@ -1505,10 +1506,8 @@ function drainTQ(){
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
       model:'claude-sonnet-4-20250514',
-      max_tokens:200,
-      messages:[{role:'user',content:'You are a real-time meeting transcription assistant. The spoken text may be in English, Malayalam, Tamil, Hindi or mixed. Output ONLY the clean English transcription - no explanation, no labels, no quotes.
-
-Spoken: '+it.raw}]
+      max_tokens:150,
+      messages:[{role:'user',content:'You are a meeting transcription assistant. The text below was spoken in a meeting and may be English, Malayalam, Tamil, Hindi or mixed. Output ONLY the clean English transcription. No explanation, no labels, no quotes.\n\nSpoken: '+it.raw}]
     })
   })
   .then(function(r){return r.json();})
@@ -1597,9 +1596,9 @@ function setCtrlBtns(enabled){
   var pb=document.getElementById('pause-btn');
   var sb=document.getElementById('stop-btn');
   if(enabled){
-    pb.style.opacity='1'; pb.style.pointerEvents='';
+    pb.style.opacity='1'; pb.style.pointerEvents='auto';
     pb.style.color=''; pb.style.borderColor=''; pb.style.fontWeight='800';
-    sb.style.opacity='1'; sb.style.pointerEvents='';
+    sb.style.opacity='1'; sb.style.pointerEvents='auto';
     sb.style.background='#DC2626'; sb.style.color='#fff';
     sb.style.border='2px solid #DC2626'; sb.style.fontWeight='800';
   } else {
@@ -1625,11 +1624,11 @@ function toggleRec(){
     getMic()
       .then(function(){
         try{recog.start();}
-        catch(e){toast('Cannot start mic - check permissions.');isRec=false;setRecBtn('idle');setCtrlBtns(false);}
+        catch(e){toast('Cannot start mic.');isRec=false;setRecBtn('idle');setCtrlBtns(false);}
       })
       .catch(function(){
         isRec=false;setRecBtn('idle');setCtrlBtns(false);
-        alert('Microphone access denied.\n\nClick the lock icon in address bar -> Microphone -> Allow -> Refresh.');
+        alert('Microphone denied.\n\nClick lock icon -> Microphone -> Allow -> Refresh.');
       });
     wave(true);setRecBtn('rec');
     setCtrlBtns(true);
@@ -1640,7 +1639,9 @@ function toggleRec(){
     /* setCtrlBtns already styled stop button */
   } /* do nothing if already recording - use Stop button */
 }
+var _pd=false;
 function togglePause(){
+  if(_pd)return;_pd=true;setTimeout(function(){_pd=false;},500);
   if(!isRec)return;
   if(!isPaused){
     isPaused=true;clearInterval(tmrInt);clearTimeout(restartTmr);
@@ -1660,7 +1661,9 @@ function togglePause(){
     document.getElementById('rec-lbl').textContent='Recording — speak clearly';
   }
 }
+var _sd=false;
 function stopRec(){
+  if(_sd)return;_sd=true;setTimeout(function(){_sd=false;},500);
   if(!isRec)return;
   isRec=false;isPaused=false;
   clearTimeout(restartTmr);/* clear BEFORE stop to prevent onend restart */
